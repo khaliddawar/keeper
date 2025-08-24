@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas UI - Refined</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #F8F7FF;
+            --bg-secondary: #FFFFFF;
+            --accent-1: #7C3AED;
+            --accent-2: #EC4899;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Condensed Sidebar */
+        .sidebar {
+            width: 64px;
+            background: var(--bg-secondary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 16px 8px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            transition: width 0.3s ease;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+
+        .nav-item.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        /* Main Content Adjustments */
+        .main-content {
+            margin-left: 64px;
+            padding: 32px;
+        }
+
+        /* Right Sidebar with Tabs */
+        .right-panel {
+            width: 320px;
+            background: var(--bg-secondary);
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            border-left: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tabs-container {
+            padding: 16px 16px 0 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .tab:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+
+        .tab.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        .tab-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .notebook-item {
+            padding: 16px;
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .notebook-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Hide scrollbar but allow scrolling */
+        .tab-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-list {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .content-area {
+            margin-right: 320px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin: 24px 0 8px 8px;
+        }
+
+        .agent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .sidebar:hover .agent-dot {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Condensed Left Sidebar -->
+    <nav class="sidebar">
+        <div class="space-y-2">
+            <div class="nav-item active">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span class="nav-text">Home</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span class="nav-text">Settings</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="message-square" class="w-5 h-5"></i>
+                <span class="nav-text">Feedback</span>
+            </div>
+        </div>
+
+        <div class="section-title nav-text">Agents</div>
+        <div class="space-y-2">
+            <div class="nav-item">
+                <div class="agent-dot bg-blue-500"></div>
+                <span class="nav-text">Chronos</span>
+            </div>
+            <div class="nav-item">
+                <div class="agent-dot bg-purple-500"></div>
+                <span class="nav-text">Nova</span>
+            </div>
+            <div class="nav-item">
+                <div class="agent-dot bg-green-500"></div>
+                <span class="nav-text">Clarity</span>
+            </div>
+        </div>
+
+        <div class="section-title nav-text">Lists</div>
+        <div class="space-y-2">
+            <div class="nav-item">
+                <i data-lucide="dumbbell" class="w-5 h-5"></i>
+                <span class="nav-text">Fitness</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="target" class="w-5 h-5"></i>
+                <span class="nav-text">Goals</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                <span class="nav-text">Writing</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-area">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="lightbulb" class="w-6 h-6 text-accent-1"></i>
+                    <h1 class="text-xl font-semibold">Ideas</h1>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">18</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-gray-100">
+                <input type="text" placeholder="What are you thinking?" class="w-full px-4 py-2 text-gray-700 focus:outline-none" />
+                <div class="flex items-center gap-2 mt-4 px-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="image" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="paperclip" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="mic" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Thoughts Feed -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="font-semibold text-lg">Preparing for Launch | IFP</h3>
+                        <span class="text-sm text-gray-500">8:36 PM</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">The piece argues the U.S. should treat advanced-AI rollout like a moon-shot: push useful systems faster and hard-wire safety, or cede both wealth and security.</p>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">AI</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">Research</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="font-semibold text-lg">Insight-to-Action Loop</h3>
+                        <span class="text-sm text-gray-500">3:37 PM</span>
+                    </div>
+                    <p class="text-gray-600">This is the difference between competing on raw intelligence and competing on compounded insight. Between starting from zero every morning and standing on the shoulders of your entire intellectual history.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Panel with Tabs -->
+    <aside class="right-panel">
+        <div class="tabs-container">
+            <div class="tab-list">
+                <button class="tab active">Work</button>
+                <button class="tab">Personal</button>
+                <button class="tab">Health</button>
+                <button class="tab">Projects</button>
+                <button class="tab">Ideas</button>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <div class="notebook-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium">Product Strategy</h3>
+                    <span class="text-sm text-gray-500">12 tasks</span>
+                </div>
+                <p class="text-sm text-gray-600">Building scalable systems and user experiences</p>
+            </div>
+
+            <div class="notebook-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium">Team Management</h3>
+                    <span class="text-sm text-gray-500">8 tasks</span>
+                </div>
+                <p class="text-sm text-gray-600">Leadership and team coordination</p>
+            </div>
+
+            <div class="notebook-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium">Q4 Planning</h3>
+                    <span class="text-sm text-gray-500">5 tasks</span>
+                </div>
+                <p class="text-sm text-gray-600">Strategic planning and roadmap</p>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Notebook item hover effect
+        document.querySelectorAll('.notebook-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-2px)';
+                item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(0)';
+                item.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

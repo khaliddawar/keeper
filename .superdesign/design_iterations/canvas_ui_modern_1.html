@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas UI - Modern Variation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --accent-1: #7C3AED;
+            --accent-2: #F472B6;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-radius: 20px;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid rgba(0,0,0,0.05);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 24px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 32px;
+        }
+
+        .right-panel {
+            width: 340px;
+            background: var(--bg-secondary);
+            border-left: 1px solid rgba(0,0,0,0.05);
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            padding: 24px;
+        }
+
+        .content-area {
+            margin-right: 340px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+
+        .nav-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+
+        .nav-item.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        .thought-card {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .thought-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        .input-box {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .input-box input {
+            background: transparent;
+            border: none;
+            flex: 1;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .input-box input:focus {
+            outline: none;
+        }
+
+        .tag {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .agent-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .distill-card {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            border-radius: var(--border-radius);
+            padding: 24px;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .theme-item {
+            padding: 16px;
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Sidebar -->
+    <nav class="sidebar">
+        <div class="window-controls">
+            <div class="window-control" style="background: #FF5F57;"></div>
+            <div class="window-control" style="background: #FFBD2E;"></div>
+            <div class="window-control" style="background: #28C840;"></div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="nav-item active">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-lg">Home</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="settings" class="w-6 h-6"></i>
+                <span class="text-lg">Settings</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="message-square" class="w-6 h-6"></i>
+                <span class="text-lg">Feedback</span>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h3 class="text-sm uppercase tracking-wider text-gray-500 mb-4 px-4">Agents</h3>
+            <div class="space-y-3">
+                <div class="nav-item">
+                    <div class="agent-circle" style="background: #3B82F6;">C</div>
+                    <span>Chronos</span>
+                </div>
+                <div class="nav-item">
+                    <div class="agent-circle" style="background: #8B5CF6;">N</div>
+                    <span>Nova</span>
+                </div>
+                <div class="nav-item">
+                    <div class="agent-circle" style="background: #10B981;">Cl</div>
+                    <span>Clarity</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h3 class="text-sm uppercase tracking-wider text-gray-500 mb-4 px-4">Lists</h3>
+            <div class="space-y-3">
+                <div class="nav-item">
+                    <i data-lucide="dumbbell" class="w-6 h-6"></i>
+                    <span>Fitness</span>
+                    <span class="ml-auto text-sm bg-gray-100 px-2 py-1 rounded-full">10</span>
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="target" class="w-6 h-6"></i>
+                    <span>Goals</span>
+                    <span class="ml-auto text-sm bg-gray-100 px-2 py-1 rounded-full">9</span>
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="pen-tool" class="w-6 h-6"></i>
+                    <span>Writing</span>
+                    <span class="ml-auto text-sm bg-gray-100 px-2 py-1 rounded-full">9</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-area">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <i data-lucide="lightbulb" class="w-8 h-8 text-accent-1"></i>
+                    <h1 class="text-2xl font-semibold">Ideas</h1>
+                    <div class="tag">18</div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-3 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                    </button>
+                    <button class="p-3 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="bell" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="input-box">
+                <input type="text" placeholder="What are you thinking?" />
+                <button class="p-3 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="image" class="w-6 h-6"></i>
+                </button>
+                <button class="p-3 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="paperclip" class="w-6 h-6"></i>
+                </button>
+                <button class="p-3 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="mic" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Thoughts Feed -->
+            <div class="space-y-6">
+                <div class="thought-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Preparing for Launch | IFP</h3>
+                        <span class="text-sm text-gray-500">8:36 PM</span>
+                    </div>
+                    <p class="text-gray-600 text-lg mb-6">The piece argues the U.S. should treat advanced-AI rollout like a moon-shot: push useful systems faster and hard-wire safety, or cede both wealth and security.</p>
+                    <div class="flex items-center gap-3">
+                        <div class="tag">AI</div>
+                        <div class="tag">Research</div>
+                    </div>
+                </div>
+
+                <div class="thought-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold">Insight-to-Action Loop</h3>
+                        <span class="text-sm text-gray-500">3:37 PM</span>
+                    </div>
+                    <p class="text-gray-600 text-lg">This is the difference between competing on raw intelligence and competing on compounded insight. Between starting from zero every morning and standing on the shoulders of your entire intellectual history.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="right-panel">
+        <div class="distill-card">
+            <h2 class="text-2xl font-semibold mb-3">Weekly Distill</h2>
+            <p class="text-white/80">Create a distillation of your week's insights and learnings.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="theme-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium text-lg">Knowledge Work</h3>
+                    <span class="text-sm text-gray-500">12 tasks</span>
+                </div>
+                <p class="text-gray-600">Focus on cognitive frameworks and tools for better thinking</p>
+            </div>
+
+            <div class="theme-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium text-lg">Product Strategy</h3>
+                    <span class="text-sm text-gray-500">8 tasks</span>
+                </div>
+                <p class="text-gray-600">Building scalable systems and user experiences</p>
+            </div>
+
+            <div class="theme-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium text-lg">Personal Growth</h3>
+                    <span class="text-sm text-gray-500">5 tasks</span>
+                </div>
+                <p class="text-gray-600">Habits, routines, and lifestyle optimization</p>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

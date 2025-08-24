@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #F8F7FF;
+            --bg-secondary: #FFFFFF;
+            --accent-1: #7C3AED;
+            --accent-2: #EC4899;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Condensed Sidebar */
+        .sidebar {
+            width: 64px;
+            background: var(--bg-secondary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 16px 8px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            transition: width 0.3s ease;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+
+        .nav-item.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        /* Task Item Styles */
+        .task-item {
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #E5E7EB;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .task-checkbox:checked {
+            background: var(--accent-1);
+            border-color: var(--accent-1);
+        }
+
+        .priority-indicator {
+            width: 4px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
+        }
+
+        .priority-high { background: #EF4444; }
+        .priority-medium { background: #F59E0B; }
+        .priority-low { background: #10B981; }
+
+        /* View Toggle Buttons */
+        .view-toggle {
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .view-toggle:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .view-toggle.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        /* Right Panel Tabs */
+        .tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tab:hover {
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .tab.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-1);
+            transition: width 0.3s ease;
+        }
+
+        /* Telegram Status */
+        .telegram-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10B981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Quick Actions */
+        .quick-action {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .quick-action:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Sidebar -->
+    <nav class="sidebar">
+        <!-- Telegram Status -->
+        <div class="telegram-status">
+            <div class="status-dot"></div>
+            <span class="nav-text text-green-600">Connected</span>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="space-y-2">
+            <div class="nav-item active">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                <span class="nav-text">Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="check-square" class="w-5 h-5"></i>
+                <span class="nav-text">Tasks</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="calendar" class="w-5 h-5"></i>
+                <span class="nav-text">Calendar</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="brain" class="w-5 h-5"></i>
+                <span class="nav-text">Memories</span>
+            </div>
+        </div>
+
+        <!-- Agents Section -->
+        <div class="mt-8">
+            <h3 class="text-xs uppercase tracking-wider text-gray-500 mb-3 px-2 nav-text">Agents</h3>
+            <div class="space-y-2">
+                <div class="nav-item">
+                    <div class="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                        <i data-lucide="clock" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <span class="nav-text">Scheduler</span>
+                </div>
+                <div class="nav-item">
+                    <div class="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                        <i data-lucide="filter" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <span class="nav-text">Classifier</span>
+                </div>
+                <div class="nav-item">
+                    <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                        <i data-lucide="brain" class="w-3 h-3 text-white"></i>
+                    </div>
+                    <span class="nav-text">Memory</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Notebooks -->
+        <div class="mt-8">
+            <h3 class="text-xs uppercase tracking-wider text-gray-500 mb-3 px-2 nav-text">Notebooks</h3>
+            <div class="space-y-2">
+                <div class="nav-item">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <span class="nav-text">Work</span>
+                </div>
+                <div class="nav-item">
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span class="nav-text">Personal</span>
+                </div>
+                <div class="nav-item">
+                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                    <span class="nav-text">Health</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="ml-16 p-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+                <h1 class="text-2xl font-semibold">Tasks</h1>
+                <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">24</span>
+            </div>
+            
+            <!-- View Toggles -->
+            <div class="flex items-center gap-2">
+                <button class="view-toggle active">
+                    <i data-lucide="list" class="w-4 h-4"></i>
+                </button>
+                <button class="view-toggle">
+                    <i data-lucide="kanban" class="w-4 h-4"></i>
+                </button>
+                <button class="view-toggle">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Task Input -->
+        <div class="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-gray-100">
+            <input type="text" 
+                   placeholder="Add a task... e.g., 'remind me to call mom tomorrow at 4pm'" 
+                   class="w-full px-4 py-3 text-gray-700 focus:outline-none text-lg"
+            />
+            <div class="flex items-center gap-2 mt-4 px-4">
+                <button class="quick-action">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span>Schedule</span>
+                </button>
+                <button class="quick-action">
+                    <i data-lucide="tag" class="w-4 h-4"></i>
+                    <span>Notebook</span>
+                </button>
+                <button class="quick-action">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    <span>Priority</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tasks List -->
+        <div class="space-y-4">
+            <!-- High Priority Task -->
+            <div class="task-item relative">
+                <div class="priority-indicator priority-high"></div>
+                <div class="flex items-start gap-4">
+                    <input type="checkbox" class="task-checkbox mt-1">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <h3 class="font-semibold">Quarterly Report Review</h3>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">Work</span>
+                            <span class="text-red-500 font-bold">!!!</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">Complete final review of Q4 performance metrics</p>
+                        <div class="flex items-center gap-4 text-sm text-gray-500">
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                Today 4pm
+                            </span>
+                            <div class="w-full max-w-xs bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="p-2 hover:bg-gray-100 rounded-full">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medium Priority Task -->
+            <div class="task-item relative">
+                <div class="priority-indicator priority-medium"></div>
+                <div class="flex items-start gap-4">
+                    <input type="checkbox" class="task-checkbox mt-1">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                            <h3 class="font-semibold">Team Sync Meeting</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">Personal</span>
+                            <span class="text-amber-500 font-bold">!!</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">Weekly alignment with product team</p>
+                        <div class="flex items-center gap-4 text-sm text-gray-500">
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                Tomorrow 10am
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="users" class="w-4 h-4"></i>
+                                5 participants
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="p-2 hover:bg-gray-100 rounded-full">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="fixed right-0 top-0 w-80 h-screen bg-white border-l border-gray-100 p-6">
+        <!-- Tabs -->
+        <div class="flex gap-2 overflow-x-auto pb-4 mb-6">
+            <button class="tab active">Work</button>
+            <button class="tab">Personal</button>
+            <button class="tab">Health</button>
+            <button class="tab">Projects</button>
+        </div>
+
+        <!-- Notebook Content -->
+        <div class="space-y-6">
+            <!-- Work Notebook -->
+            <div class="p-4 bg-gray-50 rounded-xl">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-medium">Work Tasks</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-500">12</span>
+                        <span class="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">3 urgent</span>
+                    </div>
+                </div>
+                <div class="progress-bar mb-4">
+                    <div class="progress-fill" style="width: 65%"></div>
+                </div>
+                <div class="space-y-2 mb-4">
+                    <div class="text-sm text-gray-600">• Quarterly Report - Today 4pm</div>
+                    <div class="text-sm text-gray-600">• Team Meeting - Tomorrow 10am</div>
+                    <div class="text-sm text-gray-600">• Client Presentation - Friday</div>
+                </div>
+                <button class="text-sm text-purple-600 hover:text-purple-800">+ Add Task</button>
+            </div>
+
+            <!-- Calendar Widget -->
+            <div class="p-4 bg-gray-50 rounded-xl">
+                <h3 class="font-medium mb-3">Upcoming</h3>
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-sm">
+                        <i data-lucide="calendar" class="w-4 h-4 text-purple-600"></i>
+                        <span>Team Sync - Today 2pm</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                        <i data-lucide="calendar" class="w-4 h-4 text-purple-600"></i>
+                        <span>Client Call - Tomorrow 11am</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // View toggle functionality
+        document.querySelectorAll('.view-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.view-toggle').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Task checkbox animation
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const taskItem = checkbox.closest('.task-item');
+                if (checkbox.checked) {
+                    taskItem.style.opacity = '0.5';
+                    taskItem.style.transform = 'translateX(10px)';
+                } else {
+                    taskItem.style.opacity = '1';
+                    taskItem.style.transform = 'translateX(0)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

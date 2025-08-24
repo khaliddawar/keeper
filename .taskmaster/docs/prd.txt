@@ -1,0 +1,542 @@
+# PRD — Messaging-First Agentic Assistant (Telegram v1 → Expansions)
+
+## Summary / One-liner
+
+A Telegram-based personal assistant that turns messages (text first; images/voice later) into actions across calendars, email, to-dos, and notes; it keeps short- and long-term memory, logs everything in a web dashboard, and learns preferences over time.
+
+**MVP scope (v1):** Telegram text → LLM orchestrator → tool calls for Calendar + To-do/Memory + Digest via same channel; minimal web dashboard for tasks & memories.
+
+**Next:** Email integration (read/summarize/send), image understanding, richer diary, more integrations.
+
+### Unique value proposition (v1)
+
+- Fastest path from chat to action on Telegram with confirmation-first guardrails and visible logs.
+- Privacy-first memory you can audit and edit; assistant asks before storing uncertain facts.
+- Opinionated integrations: ship P0 flows that work reliably before breadth.
+
+### MVP success criteria (numerical targets)
+
+- D1 activation ≥ 40% (connect ≥1 integration and complete ≥1 action day 1).
+- P95 response time ≤ 2.5s for simple intents; ≤ 5s for tool+LLM chain (Section 7).
+- Reminder delivery P99 on-time ≥ 99.5% (within ±60s of due time).
+- ≥ 70% of requests resolved without clarification after Phase 1 exit.
+- Weekly WAU/MAU ≥ 0.35 by end of Phase 1.
+
+## 1. Goals & Non-Goals
+
+### Goals
+
+- Zero-friction assistant via Telegram (no new app install; push/pull UX).
+- Fast path to value: schedule, remind, remember (calendars, to-dos, memory).
+- Reliable logs + searchable web dashboard for trust/transparency.
+- Privacy-first memory (user controls, redaction, retention).
+- Integration framework to add connectors rapidly (email next).
+
+### Non-Goals (MVP)
+
+- Always-on background mic or wake-word.
+- Full enterprise admin/SSO.
+- Complex UI automation of third-party mobile apps (use APIs instead).
+- Non-English NLU beyond "best effort" (phase 2/3).
+
+## 2. Personas & JTBD
+
+### P1: Busy Individual (B2C, Telegram-native)
+
+**JTBD:** "Book things and remind me via chat. Remember my preferences. Summarize important emails."
+
+**Success:** schedules created, reminders fired, memories saved/retrieved quickly.
+
+### P2: Prosumer/Indie Hacker
+
+**JTBD:** "Wire this to Notion/Todoist/GCal and keep a running diary of outcomes and insights."
+
+**Success:** multi-tool connections; searchable diary; daily digest.
+
+### P3: Admin/Ops (Internal Support/Compliance)
+
+**JTBD:** "Debug user issues, fulfill data export/delete, monitor incidents, ensure compliance."
+
+**Success:** can search logs by user/message id, trigger export/delete, view health/alerts.
+
+## 3. Top Use-Cases (MVP)
+
+**Priorities:** Scheduling (P0), Reminders (P0), Memory (P1), Digest (P2)
+
+### Core Use Cases
+
+**Scheduling:** "book my calendar for a meeting tomorrow with Khan J."
+→ Create GCal event; resolve "Khan J"; ask clarify if ambiguous; confirm in Telegram; log task.
+
+**Reminder/To-do:** "remind me to call my mom today at 4pm."
+→ Create To-do with due time; notify at 4pm in Telegram; mark done on user confirmation.
+
+**Memory:** "remember my passport expires Oct 2027."
+→ Save LTM memory; propose follow-up reminder (e.g., renew 6 months prior).
+
+**Digest:** "what did you do for me this week?"
+→ Generate weekly digest: tasks created, events, reminders, key memories.
+
+**Data Management:** "export/delete my data."
+→ Provide export file (JSON + ICS) or trigger delete with confirmation in Telegram/web.
+
+### Post-MVP (v1.5+)
+
+**Email (priority):** "email Khan the Zoom link at 9am," "summarize my inbox this morning," "archive promos."
+
+**Image understanding:** Send dish photo → propose "find similar nearby/save to Random List."
+
+**Voice notes:** Telegram voice → ASR → same orchestration.
+
+## 4. User Stories & Acceptance Criteria
+
+### 4.1 Scheduling
+
+**Story:** As a user, I want to create a calendar event via Telegram so I don't open my calendar app.
+
+**AC (Given/When/Then):**
+
+Given I'm connected to Google Calendar, when I send "Book my calendar for a meeting tomorrow with Khan J 11am–12pm," then an event is created with title "Meeting with Khan J," correct date/time, default location = None, attendees resolved if known; the bot replies with ✅ summary and a deep-link to the event.
+
+- If "Khan J" is ambiguous, bot asks for disambiguation (contact/email).
+- If no OAuth, bot replies with a one-tap link to connect Calendar; on success, retries.
+
+**Edge cases:**
+- Conflicts: if overlapping event detected, bot proposes options [Keep both][Move] with alternate slots.
+- Recurrence: supports simple recurrence (daily/weekly) post-MVP; in MVP, bot clarifies one-off vs recurring.
+- Time parsing: respects user timezone; if ambiguous date format, ask for confirmation.
+- Performance: P95 end-to-end ≤ 5s for create; retries with backoff on transient errors.
+
+### 4.2 Reminders / To-dos
+
+**Story:** As a user, I want quick reminders that DM me at the right time.
+
+**AC:**
+
+When I say "remind me to call mom today at 4pm," then a To-do is created with due=local 16:00, status=pending; at due time a Telegram notification is sent with quick actions [Done][Snooze 10m][Edit].
+
+- Marking Done updates state and the daily digest.
+
+**Edge cases:**
+- Snooze choices: 10m, 1h, Tomorrow 9am; configurable later.
+- Missed reminders: if job delayed >2m, send apology note and fire immediately.
+- Offline: if Telegram unreachable, retry 3x with backoff and surface in dashboard.
+- Recurrence: out of scope for MVP; add to backlog.
+
+### 4.3 Memory (Short/Long)
+
+**Story:** As a user, I want the assistant to remember durable facts and preferences.
+
+**AC:**
+
+- "remember I prefer vegetarian" stores a memory (type=preference) with timestamp and source message id.
+- "what do I prefer?" retrieves the latest memory; responses must include source/last-updated.
+- System only auto-stores when confidence high (explicit "remember", repeated fact, or flagged key entity like contacts/addresses). Otherwise, it asks: "Want me to remember this?"
+
+**Edge cases:**
+- Redaction: mask credit cards/government IDs by default; allow explicit override with confirmation.
+- Updates: when conflicting facts appear, show last-updated and ask to replace or keep both.
+- Performance: retrieval must return top-k within 300ms at P95 for dashboard queries.
+
+### 4.4 Digest
+
+**Story:** As a user, I want a weekly Telegram digest and a dashboard view of task history.
+
+**AC:**
+
+- Sunday 6pm local: bot posts a digest (tasks created/completed, upcoming events next week, new memories).
+- Dashboard shows the same data with filters (time range, type).
+
+**Edge cases:**
+- Quiet hours: no digests during 11pm–7am local; defer to 7am.
+- Failures: if digest generation fails, post fallback summary with error reference.
+
+### 4.5 Email (v1.5)
+
+**Story:** As a user, I want inbox summaries and simple sends from Telegram.
+
+**AC:**
+
+- "summarize my inbox (last 4h)" returns a 5-bullet summary with counts and top threads; includes [Open thread] links.
+- "email Khan the Zoom link at 9am" creates a scheduled send; bot confirms; execution logged.
+
+## 5. UX Flows (Telegram & Web)
+
+### 5.1 Telegram happy-path (Scheduling)
+
+```
+You: book my calendar for a meeting tomorrow with Khan J at 11am
+
+Bot: I see 2 Khans: [Khan Jamal - jamal@x.com] [Khan J. - work@khan.co]. Which one?
+
+You: first
+
+Bot: ✅ Created "Meeting with Khan Jamal" — Thu, 11:00–12:00. [View in Calendar] [Edit] [Cancel]
+```
+
+### 5.2 Telegram reminder flow
+
+```
+You: remind me to call my mom today 4pm
+
+Bot: ✅ Reminder set — "Call Mom" for Today 4:00 PM. I'll ping you here.
+
+(4:00 PM)
+Bot: 🔔 "Call Mom" is due. [Done] [Snooze 10m] [Mark Unreachable]
+```
+
+### 5.3 Telegram image (v2)
+
+```
+You: (sends photo of a dish)
+
+Bot: Looks like a pasta dish. Do you want me to:
+    [Find similar nearby] [Save to Random list] [Ignore]
+```
+
+### 5.4 Web dashboard (wireframe)
+
+```
++--------------------------------------------------------------+
+|  Tasks (Pending/Done)   |  Memories   |  Diary   | Integrations |
++--------------------------------------------------------------+
+| [ ] Call Mom — Today 4:00 PM        [Edit] [Delete]         |
+| [ ] Send slides to Khan — Fri 9:00  [Edit] [Delete]         |
+|--------------------------------------------------------------|
+| Filters: [This week ▼] [Type: All ▼] [Search…]               |
++--------------------------------------------------------------+
+| Memories (latest first):                                     
+| • Prefers vegetarian (source: chat #134)  — updated Aug 22   |
+| • Passport expires Oct 2027 (source: chat #129)              |
++--------------------------------------------------------------+
+| Diary:                                                       |
+| • Week of Aug 18: 12 tasks created / 10 completed; 5 events; |
+|   2 new memories; Top contact: Khan Jamal                    |
++--------------------------------------------------------------+
+```
+
+## 6. Functional Requirements by Module
+
+### 6.1 Telegram Ingest
+
+- Receive messages (text v1; voice/image v2).
+- Normalize context: user id, chat id, timezone, locale.
+- Idempotency keys per message to avoid double-processing.
+- Reply renderer (text + inline buttons).
+
+### 6.2 Orchestrator (LLM-driven)
+
+- Intent classification: schedule / todo / memory / digest / email / other.
+- Entity extraction: people, time expressions, locations, subjects.
+- Tool selection & function-calling (JSON schema).
+- Clarification turns (bounded to ≤2 questions unless user reaffirms).
+- Safety: confirmation for high-impact actions (email send, deletes).
+
+### 6.3 Tools / Connectors (v1)
+
+- **CalendarTool (Google Calendar):** create/update/cancel/list; OAuth; multi-calendar selection.
+- **TasksTool (internal DB):** CRUD tasks; statuses (pending, done, snoozed).
+- **MemoryTool (LTM):** write policy (explicit/heuristic), read (exact + semantic), update.
+- **DigestTool:** weekly summary compiler.
+- **(v1.5) EmailTool (Gmail):** list threads, summarize, draft/send/schedule; safety confirmations; attachment support later.
+
+### 6.4 Memory System
+
+- **STM:** recent N messages per user (configurable; token-aware).
+- **LTM:** Postgres + pgvector (or equivalent). Entities: preference, contact, document_fact, recurring_pattern.
+- **Write heuristic:** store if explicit "remember", or repeated ≥2 times, or tagged by the model as high value (contacts/dates/IDs). Otherwise ask consent.
+- **Redaction:** auto-mask sensitive strings (credit cards, gov IDs) unless explicitly allowed.
+- **Retention:** default 12 months for raw logs; memories indefinite until user deletes.
+
+### 6.5 Web Dashboard
+
+- Auth (magic link + Telegram account link).
+- Views: Tasks, Memories, Diary, Integrations.
+- Edits propagate to source (e.g., editing event title updates GCal).
+
+### 6.6 Notifications & Scheduling
+
+- Cron/worker for reminders and weekly digests.
+- Timezone awareness per user; DST-safe scheduling.
+
+## 7. Non-Functional Requirements
+
+- **Latency:** P95 ≤ 2.5s for simple tasks; ≤ 5s for tool+LLM chain.
+- **Reliability:** P99 delivery of due reminders; retries with backoff.
+- **Security:** OAuth tokens stored encrypted (KMS); data at rest AES-256; TLS in transit.
+- **Privacy:** Opt-in memory; export & delete my data (self-serve); per-integration scopes.
+- **Scalability:** 100k MAU target architecture; stateless API; horizontal workers.
+
+## 8. Governance & Operations (MVP+)
+
+### Security & Compliance
+
+- Data protection: TLS 1.2+, AES-256 at rest; key management via cloud KMS.
+- Privacy: opt-in memory; explicit consent prompts; per-integration least-privilege scopes.
+- Compliance roadmap: GDPR/CCPA readiness (data export/delete self-serve); DPA template; SOC 2 pre-work.
+- Secrets: stored in Secret Manager/KMS; rotation quarterly or on incident.
+
+### Disaster Recovery / Backups
+
+- RPO ≤ 1 hour; RTO ≤ 4 hours.
+- Nightly encrypted backups of Postgres and object store; restore playbook tested quarterly.
+- Multi-AZ database deployment; worker idempotency for replay.
+
+### Observability & Incident Response
+
+- Centralized logs (OpenTelemetry → ELK/Grafana); trace key flows (ingest → tool → reply).
+- Alerts with on-call rotation; incident severity levels and SLAs.
+- Runbooks for common failures (OAuth errors, queue backlog, Telegram outages).
+
+### Accessibility & Localization
+
+- Dashboard: WCAG 2.1 AA baseline; keyboard navigation; color-contrast checks.
+- i18n framework ready; English-only MVP; add locales in Phase 2.
+
+### User Feedback Loop
+
+- Inline 👍/👎 after actions; capture reason codes; feed into evaluation.
+- In-dashboard feedback form linked to user/session.
+
+### Responsibility Map (RACI)
+
+- Product: requirements, prioritization; Eng: implementation, reliability; Ops: on-call, DR; Security: audits.
+
+## 9. System Architecture (high-level)
+
+```
+[Telegram] --> [API Ingest] --> [Orchestrator Service] --> [Tool Router] ----> [Calendar Connector]
+                          |                     |                           -> [Tasks/Memory Service]
+                          |                     |                           -> [Email Connector (v1.5)]
+                          |                     -> [Prompt/Policy Store]    -> [Other Connectors]
+                          -> [Reply Renderer]                               
+
+[Web Dashboard] --> [API Gateway] --> [Tasks/Memory/Diary API]
+```
+
+**Infra:** FastAPI (Python), Celery/RQ workers, Redis (queues/locks), Postgres (+ pgvector), Object store (images/attachments, v2), OpenAI/Anthropic SDK (LLM), OAuth broker, Logging/Tracing (OpenTelemetry + ELK/Grafana).
+
+### Architecture notes (governance)
+
+- Stateless API services with horizontal autoscaling; workers isolated by queue types (ingest, tools, notifications).
+- Secrets/config via environment + KMS; no secrets in code or images.
+- Feature flags for orchestrator prompt/policy changes; rollback within minutes.
+- Rate limits at ingress per-user and per-IP; circuit breakers for flaky connectors.
+
+## 10. Data Model (core tables)
+
+```sql
+user(id, telegram_id, email, tz, locale, created_at)
+
+integration_credential(id, user_id, provider, scopes, token_encrypted, refreshed_at)
+
+task(id, user_id, title, due_at, status, source_msg_id, created_at, completed_at)
+
+event_link(id, user_id, calendar_provider, calendar_event_id, title, start_at, end_at, attendees[])
+
+recurrence_rule(id, user_id, target_type, target_id, rrule, timezone, created_at, updated_at)
+
+memory(id, user_id, type, text, vector, source_msg_id, pii_masked, created_at, updated_at)
+
+message_log(id, user_id, chat_id, content, content_type, intent, latency_ms, error)
+
+digest(id, user_id, period_start, period_end, text, created_at)
+```
+
+**Indexes:** on (user_id, due_at), vector index on memory.vector.
+
+## 11. API & Tool Schemas (examples)
+
+### Function: create_calendar_event
+
+```json
+{
+  "name": "create_calendar_event",
+  "description": "Create an event in user's primary calendar",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "title": {"type":"string"},
+      "start_iso": {"type":"string"},
+      "end_iso": {"type":"string"},
+      "attendees": {"type":"array","items":{"type":"string","format":"email"}},
+      "notes": {"type":"string"}
+    },
+    "required": ["title","start_iso","end_iso"]
+  }
+}
+```
+
+### Function: create_task
+
+```json
+{
+  "name":"create_task",
+  "parameters":{
+    "type":"object",
+    "properties":{
+      "title":{"type":"string"},
+      "due_iso":{"type":"string"},
+      "source":{"type":"string","enum":["telegram","web"]}
+    },
+    "required":["title"]
+  }
+}
+```
+
+### Function: write_memory
+
+```json
+{"name":"write_memory","parameters":{"type":"object","properties":{"text":{"type":"string"},"type":{"type":"string","enum":["preference","contact","fact"]}},"required":["text"]}}
+```
+
+### Response & versioning (all endpoints)
+
+- **Versioning:** prefix base path with /v1/; breaking changes increment major version.
+- **Success envelope:** `{"ok": true, "data": <payload>, "request_id": "..."}`
+- **Error envelope:** `{"ok": false, "error": {"code": "<machine_code>", "message": "<human>"}, "request_id": "..."}`
+
+## 12. Prompting & Policy (orchestrator)
+
+**System prompt:** role, capabilities, tool list, safety: always confirm high-impact actions, ask clarifying questions if missing a required parameter; never invent contacts; propose options when ambiguous.
+
+**Memory policy:** before answering, retrieve top-k LTM via semantic search on the user query; include snippets; after answering, evaluate if memory write is warranted (yes/no -> tool call).
+
+**Temporal reasoning:** normalize "tomorrow", "next Friday" using user timezone; handle locale formats.
+
+### Prompt & LLM Governance
+
+- Prompts and tool policies are versioned and stored in a repo-backed store; changes behind feature flags.
+- Offline test harness runs synthetic corpus against candidate prompt versions; require non-regression before rollout.
+- Rollback plan: revert flag to prior version within minutes if metrics regress (latency, clarification rate, tool errors).
+
+## 13. Telemetry & Metrics
+
+### Product KPIs
+- Activation (connect ≥1 integration + complete ≥1 action D1)
+- WAU/MAU; weekly completed actions/user
+- Reminder delivery P99; 7/30/90-day retention
+- % queries resolved without clarification
+- Upgrade rate to Email feature
+
+### Quality
+- Tool-chain success rate
+- Average clarifications per task
+- Memory precision@k (manual evaluation sampling)
+
+### Cost
+- Avg tokens per request
+- ASR/LLM spend per MAU
+- Connector error rates
+
+### Alert thresholds (examples)
+
+- Reminder delivery P99 > 120s for 5 min → page on-call.
+- API error rate > 2% over 10 min → alert; >5% → page.
+- Queue latency (p95) > 30s for 10 min → scale workers and alert.
+
+### Rollout exit criteria (per phase)
+
+- **Phase 0:** 5 internal users create ≥20 calendar events each; success rate ≥95%; P95 latency within targets.
+- **Phase 1:** 50–100 private beta users; D1 activation ≥40%; % queries resolved w/o clarification ≥70%; reminder P99 on-time ≥99.5%.
+- **Phase 1.5 (Email):** 90% successful OAuth; inbox summary accuracy ≥4/5 user rating on 30 sessions; zero unintended sends.
+- **Phase 2 (Image/Voice):** latency targets met; opt-in rates ≥20% among active users; no PII leakage in captions (manual audit sample).
+
+## 14. Rollout Plan
+
+### Phase 0 (Weeks 0–4): Foundations
+- Telegram bot ingest, FastAPI, Postgres, Redis queues.
+- Orchestrator v0 (GPT-3.5), Calendar + Tasks + Memory tools.
+- Basic dashboard: Tasks/Memories list (read/write).
+
+### Phase 1 (Weeks 5–8): MVP / Private Beta
+- Clarification & confirmation flows.
+- Weekly digest; reminder scheduler; error handling/retries.
+- Privacy controls (export/delete my data).
+- 50–100 test users.
+
+### Phase 1.5 (Weeks 9–12): Email Priority
+- Gmail OAuth; inbox summary; simple send/schedule; guardrails.
+- Dashboard Inbox panel (read-only).
+
+### Phase 2 (Months 3–5): Image & Voice
+- Telegram photo ingest → captioning → intent proposals.
+- Voice notes → ASR (Whisper or platform STT).
+- Diary/Insights view; memory management UI.
+
+### Phase 3 (Months 6+): Scale & More Integrations
+- Todoist/Notion connectors; multi-calendar; categories.
+- Performance tuning; model switch strategy (3.5 vs 4).
+- Pricing/paywall; freemium limits.
+
+## 15. Risks & Mitigations
+
+- **Ambiguity & errors:** add confirmations; constrain tools; human-readable diffs in confirmations.
+- **Integration churn:** adapter pattern; contract tests; graceful degradation.
+- **Privacy trust:** explicit memory consent; redaction; user-visible memory page with edit/delete.
+- **Latency/cost:** caching; small model for simple intents; batch digests; streaming replies.
+- **Platform limits:** stick to official APIs (Telegram/Gmail/GCal); keep WA sandbox for later.
+- **LLM model/policy/pricing volatility:** abstract model provider; maintain cost guardrails and fallback prompts/models.
+
+## 16. QA Strategy (MVP)
+
+- Synthetic test corpus of 200+ phrasings per intent (date/time variations, contacts, locales).
+- Golden-set replays on each deploy (CI).
+- Chaos tests: API outage simulation for connectors; verify graceful fallback.
+
+### QA additions
+
+- **Load tests:** target 20 RPS API steady; queue 200 jobs/min; measure p95 latencies.
+- **DST test suite:** simulate transitions in at least 4 locales; verify reminder/event correctness.
+
+## 17. Pricing (placeholder for v2)
+
+- **Free:** X actions/month; Calendar/Tasks/Memory; weekly digest.
+- **Pro ($/mo):** Unlimited actions fair-use; Email; image/voice; advanced digests.
+- **Add-ons:** Extra inboxes; priority inference.
+
+### Pricing (added target)
+
+- **North-star gross margin ≥ 70%** at MVP scale to guide infra choices.
+
+## 18. Open Questions
+
+- Contact resolution source: import from Google Contacts vs. in-product directory?
+- Default memory retention (12m vs. user-defined)?
+- Image features default action (auto-save vs. always ask)?
+- Multi-language NLU sequencing (which languages first)?
+
+### Open Questions (added)
+
+- Should we support a fallback non-Telegram channel (email) for critical alerts?
+- Data residency constraints: do we need EU data storage for EU users?
+
+## Technical Spec (condensed)
+
+### Stack
+- Python 3.11, FastAPI, Uvicorn/Gunicorn
+- Celery/RQ + Redis for jobs/scheduling
+- Postgres (Supabase compatible) + pgvector
+- OpenAI (3.5/4 function calling), optional Anthropic abstraction
+- OAuth (Authlib), Google APIs (Calendar/Gmail)
+- Telegram Bot API (webhook)
+- OpenTelemetry + Prometheus + Grafana
+
+### Deployment
+- Dockerized services; k8s or ECS; HPA on workers
+- Secrets in KMS/SM; per-env config; blue/green deploys
+
+### Security
+- Token encryption; principle of least privilege on scopes
+- PII classification + masking
+- Audit logs (tool calls, parameter diffs, user confirmations)
+
+### Performance targets
+- Throughput: 20 RPS steady on API with auto-scale headroom
+- Queue worker: 200 jobs/min baseline (tool chains)
+- P95 latencies (Section 7)
+
+### Cross-references
+
+- See Section 8 (Governance & Operations) for security, DR, observability standards adopted by the stack.
+- See Section 10 for API envelopes and versioning; Section 11 for prompt governance and rollback.

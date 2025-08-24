@@ -1,0 +1,582 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Foundation Infrastructure Setup",
+        "description": "Set up core development infrastructure including database, Redis, and FastAPI foundation with Docker Compose for local development.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "infrastructure",
+          "foundation",
+          "sprint-1"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Docker Compose setup with Postgres + pgvector, Redis, FastAPI services",
+            "Database schema implemented with notebooks, tasks, users, memories tables",
+            "Environment configuration and secrets management",
+            "Health check endpoints for all services",
+            "Local development documentation"
+          ],
+          "testStrategy": "Integration tests for database connectivity, Redis operations, and service health checks",
+          "dependencies": [],
+          "complexity": 7,
+          "timeEstimate": "3-4 days",
+          "sprint": {
+            "number": 1,
+            "theme": "Get the Pipes Working",
+            "weeks": "1-2"
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "Thoughtkeeper-Inspired Frontend Foundation",
+        "description": "Create React frontend foundation with TailwindCSS, Framer Motion, and notebook-first component structure matching thoughtkeeper's design patterns.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "frontend",
+          "ui",
+          "notebooks",
+          "sprint-2"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "React + TypeScript + Vite setup with TailwindCSS configuration",
+            "Framer Motion integration for animations",
+            "Lucide React icons system",
+            "Base UI components (Button, Input, Select, Checkbox) with variants",
+            "Layout components (Header, Sidebar, NotebookNavigation)",
+            "Zustand stores for auth, notebooks, tasks, memories",
+            "Component organization following thoughtkeeper patterns"
+          ],
+          "testStrategy": "Component unit tests with Testing Library, visual regression tests for UI components",
+          "dependencies": [],
+          "complexity": 8,
+          "timeEstimate": "4-5 days",
+          "sprint": {
+            "number": 2,
+            "theme": "Building the Thoughtkeeper Foundation",
+            "weeks": "3-4"
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Notebook Management System (Backend)",
+        "description": "Implement notebook CRUD operations, auto-classification logic, and notebook-aware task associations in the backend.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "backend",
+          "notebooks",
+          "api"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Notebook SQLAlchemy models with color, icon, metadata",
+            "CRUD API endpoints: GET /notebooks, POST /notebooks, PUT /notebooks/{id}, DELETE /notebooks/{id}",
+            "Default notebook creation (Work, Personal, Hustles, Health, Ideas)",
+            "Notebook stats computation (task counts, urgent tasks, progress)",
+            "Task-notebook relationship enforcement",
+            "Auto-classification service skeleton"
+          ],
+          "testStrategy": "API endpoint tests, database relationship tests, notebook statistics calculations",
+          "dependencies": [
+            1
+          ],
+          "complexity": 8,
+          "timeEstimate": "4-5 days"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Notebook-First Dashboard UI",
+        "description": "Create the main dashboard with large notebook cards, statistics display, and notebook-first navigation following thoughtkeeper's visual design.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "frontend",
+          "dashboard",
+          "notebooks"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "NotebookGrid component displaying large interactive cards",
+            "NotebookCard component with color coding, icons, task counts, urgency indicators",
+            "Animated hover effects and transitions with Framer Motion",
+            "Progress indicators and visual status displays",
+            "Notebook navigation tabs with active states",
+            "Responsive design for mobile and desktop",
+            "Integration with notebook API endpoints"
+          ],
+          "testStrategy": "Component interaction tests, responsive design tests, API integration tests",
+          "dependencies": [
+            2,
+            3
+          ],
+          "complexity": 9,
+          "timeEstimate": "5-6 days"
+        }
+      },
+      {
+        "id": 5,
+        "title": "Enhanced Task Management System",
+        "description": "Implement comprehensive task CRUD with notebook associations, priority levels, progress tracking, and tags following the enhanced data model.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "backend",
+          "tasks",
+          "api"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Enhanced Task model with notebook_id, priority, progress, tags, time_estimate",
+            "Task API endpoints with notebook filtering: GET /notebooks/{id}/tasks",
+            "Task CRUD operations with validation and relationships",
+            "Bulk operations support for task management",
+            "Task status transitions (pending → in-progress → done)",
+            "Due date and reminder scheduling foundation",
+            "Task search and filtering by multiple criteria"
+          ],
+          "testStrategy": "CRUD operation tests, relationship constraint tests, filtering and search tests",
+          "dependencies": [
+            3
+          ],
+          "complexity": 8,
+          "timeEstimate": "4-5 days"
+        }
+      },
+      {
+        "id": 6,
+        "title": "Task Views (Kanban, List, Calendar)",
+        "description": "Implement multiple task view modes within notebooks: drag-and-drop Kanban board, filterable list view, and calendar view.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "frontend",
+          "tasks",
+          "views"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "KanbanBoard component with drag-and-drop functionality",
+            "TaskListView component with bulk selection and filtering",
+            "TaskCalendarView component showing tasks by due date",
+            "TaskCard component with progress bars, priority indicators, tags",
+            "View mode toggle and state persistence",
+            "Task filtering by status, priority, due date, tags",
+            "Real-time updates and optimistic UI updates",
+            "Responsive design for all view modes"
+          ],
+          "testStrategy": "Drag-and-drop interaction tests, view switching tests, filtering functionality tests",
+          "dependencies": [
+            4,
+            5
+          ],
+          "complexity": 9,
+          "timeEstimate": "6-7 days"
+        }
+      },
+      {
+        "id": 7,
+        "title": "Authentication & User Management",
+        "description": "Implement Telegram-based authentication, JWT token management, and user profile system with timezone support.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "phase-0",
+          "auth",
+          "security"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Telegram auth verification endpoint",
+            "JWT token generation and validation middleware",
+            "User model with telegram_id, timezone, locale, preferences",
+            "Protected route middleware for API endpoints",
+            "Frontend auth state management with Zustand",
+            "Login/logout flows with token persistence",
+            "User session management and refresh logic"
+          ],
+          "testStrategy": "Authentication flow tests, JWT validation tests, protected route access tests",
+          "dependencies": [
+            1
+          ],
+          "complexity": 7,
+          "timeEstimate": "3-4 days"
+        }
+      },
+      {
+        "id": 8,
+        "title": "Telegram Bot Foundation",
+        "description": "Create Telegram bot webhook infrastructure, message ingestion pipeline, and basic response system.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-0",
+          "telegram",
+          "bot",
+          "ingestion"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Telegram webhook endpoint setup and verification",
+            "Message ingestion pipeline with idempotency",
+            "User context normalization (chat_id, user_id, timezone)",
+            "Message logging to database",
+            "Basic reply rendering system",
+            "Error handling and retry logic",
+            "Webhook security validation"
+          ],
+          "testStrategy": "Webhook integration tests, message processing tests, security validation tests",
+          "dependencies": [
+            1,
+            7
+          ],
+          "complexity": 8,
+          "timeEstimate": "4-5 days"
+        }
+      },
+      {
+        "id": 9,
+        "title": "LLM Orchestrator with Notebook Classification",
+        "description": "Implement the core LLM orchestrator service with intelligent notebook classification, intent detection, and tool calling capabilities.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-1",
+          "llm",
+          "orchestrator",
+          "classification"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "OpenAI/Anthropic SDK integration with function calling",
+            "Intent classification (schedule, todo, memory, digest)",
+            "Smart notebook classification logic (work, personal, health, etc.)",
+            "Entity extraction (people, dates, locations)",
+            "Tool selection and execution framework",
+            "Clarification turn management (max 2 questions)",
+            "Context building from user history and preferences"
+          ],
+          "testStrategy": "LLM response tests, classification accuracy tests, tool calling integration tests",
+          "dependencies": [
+            8
+          ],
+          "complexity": 9,
+          "timeEstimate": "6-7 days"
+        }
+      },
+      {
+        "id": 10,
+        "title": "Memory System with Vector Search",
+        "description": "Implement long-term memory storage with pgvector embeddings, semantic search, and PII redaction capabilities.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "phase-1",
+          "memory",
+          "vector",
+          "search"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Memory model with vector embeddings (1536 dimensions)",
+            "OpenAI embeddings API integration",
+            "Semantic search function with similarity thresholds",
+            "Memory write policies (explicit, heuristic, consent-based)",
+            "PII detection and redaction for sensitive data",
+            "Memory types: preference, contact, fact, recurring_pattern",
+            "Vector similarity search with performance optimization",
+            "Memory management UI in dashboard"
+          ],
+          "testStrategy": "Vector similarity tests, PII redaction tests, memory retrieval accuracy tests",
+          "dependencies": [
+            1,
+            9
+          ],
+          "complexity": 8,
+          "timeEstimate": "5-6 days"
+        }
+      },
+      {
+        "id": 11,
+        "title": "Calendar Integration (Google Calendar)",
+        "description": "Implement Google Calendar OAuth integration, event creation, conflict detection, and calendar synchronization.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-1",
+          "calendar",
+          "google",
+          "integration"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Google Calendar OAuth 2.0 flow implementation",
+            "Calendar event CRUD operations",
+            "Conflict detection and resolution options",
+            "Multi-calendar support and selection",
+            "Event attendee resolution from contacts",
+            "Timezone-aware event scheduling",
+            "Integration credential encryption and refresh",
+            "Event-task linking system"
+          ],
+          "testStrategy": "OAuth flow tests, calendar operations tests, conflict resolution tests",
+          "dependencies": [
+            9,
+            7
+          ],
+          "complexity": 9,
+          "timeEstimate": "6-7 days"
+        }
+      },
+      {
+        "id": 12,
+        "title": "Task & Reminder Scheduling System",
+        "description": "Implement background job system for task reminders, notifications, and scheduled operations using Celery/Redis.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-1",
+          "scheduling",
+          "reminders",
+          "workers"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Celery worker setup with Redis broker",
+            "Task reminder scheduling and execution",
+            "Telegram notification delivery with inline buttons",
+            "Snooze functionality (10m, 1h, tomorrow)",
+            "Missed reminder handling and retry logic",
+            "Timezone-aware scheduling",
+            "DST transition handling",
+            "Performance: P99 delivery within ±60s of due time"
+          ],
+          "testStrategy": "Scheduling accuracy tests, notification delivery tests, timezone handling tests",
+          "dependencies": [
+            8,
+            5
+          ],
+          "complexity": 8,
+          "timeEstimate": "5-6 days"
+        }
+      },
+      {
+        "id": 13,
+        "title": "Real-time Dashboard Updates",
+        "description": "Implement WebSocket connections for real-time dashboard updates, live notifications, and notebook statistics refresh.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "phase-1",
+          "websocket",
+          "realtime",
+          "notifications"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "WebSocket server implementation with FastAPI",
+            "Frontend WebSocket client with reconnection logic",
+            "Real-time notebook statistics updates",
+            "Live task creation and status updates",
+            "Notification toast system with animations",
+            "Connection state management and offline handling",
+            "Event broadcasting to specific users",
+            "Performance: updates delivered within 200ms"
+          ],
+          "testStrategy": "WebSocket connection tests, real-time update tests, offline behavior tests",
+          "dependencies": [
+            4,
+            6
+          ],
+          "complexity": 7,
+          "timeEstimate": "4-5 days"
+        }
+      },
+      {
+        "id": 14,
+        "title": "Tool Router & Integration Framework",
+        "description": "Create the tool router system for executing external tool calls with error handling, retries, and circuit breaker patterns.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "phase-1",
+          "tools",
+          "integration",
+          "framework"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Tool registry and selection system",
+            "Circuit breaker pattern for external API calls",
+            "Retry logic with exponential backoff",
+            "Tool execution logging and monitoring",
+            "Function schema validation",
+            "Tool result processing and formatting",
+            "Integration status monitoring",
+            "Graceful degradation when services unavailable"
+          ],
+          "testStrategy": "Tool execution tests, circuit breaker tests, retry mechanism tests",
+          "dependencies": [
+            9,
+            11
+          ],
+          "complexity": 7,
+          "timeEstimate": "4-5 days"
+        }
+      },
+      {
+        "id": 15,
+        "title": "Weekly Digest Generation",
+        "description": "Implement automated weekly digest generation, scheduling, and delivery via Telegram with dashboard archive.",
+        "status": "pending",
+        "priority": "low",
+        "tags": [
+          "phase-1",
+          "digest",
+          "automation"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Weekly digest compilation from tasks, events, memories",
+            "Automated scheduling (Sunday 6pm local time)",
+            "Quiet hours handling (defer to 7am if night time)",
+            "Digest formatting and template system",
+            "Dashboard digest archive and viewing",
+            "User preferences for digest frequency and content",
+            "Fallback digest generation for failures",
+            "Performance: digest generation within 30s"
+          ],
+          "testStrategy": "Digest content tests, scheduling tests, quiet hours behavior tests",
+          "dependencies": [
+            12,
+            10
+          ],
+          "complexity": 6,
+          "timeEstimate": "3-4 days"
+        }
+      },
+      {
+        "id": 16,
+        "title": "Data Export & Privacy Controls",
+        "description": "Implement GDPR-compliant data export, deletion capabilities, and user privacy controls with audit logging.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "phase-1",
+          "privacy",
+          "gdpr",
+          "compliance"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Complete data export in JSON + ICS formats",
+            "Secure data deletion with cascading deletes",
+            "Privacy settings UI in dashboard",
+            "Memory consent management and opt-in controls",
+            "Audit logging for all data operations",
+            "Data retention policy implementation",
+            "User confirmation flows for destructive actions",
+            "Compliance with GDPR/CCPA requirements"
+          ],
+          "testStrategy": "Data export completeness tests, deletion cascade tests, privacy setting tests",
+          "dependencies": [
+            7,
+            4
+          ],
+          "complexity": 7,
+          "timeEstimate": "4-5 days"
+        }
+      },
+      {
+        "id": 17,
+        "title": "Performance Optimization & Monitoring",
+        "description": "Implement comprehensive monitoring, logging, alerting system, and performance optimizations to meet SLA targets.",
+        "status": "pending",
+        "priority": "medium",
+        "tags": [
+          "phase-1",
+          "monitoring",
+          "performance",
+          "observability"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "OpenTelemetry integration for tracing",
+            "Prometheus metrics collection",
+            "Grafana dashboards for system monitoring",
+            "Centralized logging with structured formats",
+            "Alert rules for SLA violations",
+            "Performance targets: P95 ≤ 2.5s simple, ≤ 5s LLM chains",
+            "Database query optimization and indexing",
+            "API response caching strategies"
+          ],
+          "testStrategy": "Load testing, performance regression tests, monitoring accuracy tests",
+          "dependencies": [
+            1,
+            9
+          ],
+          "complexity": 8,
+          "timeEstimate": "5-6 days"
+        }
+      },
+      {
+        "id": 18,
+        "title": "End-to-End Integration & Testing",
+        "description": "Comprehensive end-to-end testing covering full user journeys from Telegram messages to dashboard updates.",
+        "status": "pending",
+        "priority": "high",
+        "tags": [
+          "phase-1",
+          "testing",
+          "e2e",
+          "integration"
+        ],
+        "details": {
+          "acceptanceCriteria": [
+            "Playwright E2E test suite for critical user journeys",
+            "Telegram bot interaction testing framework",
+            "Full workflow tests: message → classification → tool execution → confirmation",
+            "Notebook-first dashboard interaction tests",
+            "Real-time update propagation tests",
+            "Error handling and edge case coverage",
+            "Performance testing under load",
+            "Cross-browser compatibility testing"
+          ],
+          "testStrategy": "End-to-end user journey tests, integration test suite, performance benchmarks",
+          "dependencies": [
+            13,
+            14,
+            15
+          ],
+          "complexity": 9,
+          "timeEstimate": "6-7 days"
+        }
+      }
+    ],
+    "metadata": {
+      "projectName": "Messaging-First Agentic Assistant",
+      "created": "2024-01-XX",
+      "description": "Thoughtkeeper-integrated notebook-first Telegram assistant with LLM orchestration",
+      "tags": {
+        "current": "master",
+        "available": [
+          "master"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+:root {
+  /* Base colors */
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.2 0 0);
+  
+  /* UI Colors */
+  --primary: oklch(0.65 0.2 290);    /* Purple accent */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.95 0.02 290);  /* Light purple */
+  --secondary-foreground: oklch(0.3 0 0);
+  
+  /* Neutral tones */
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.93 0.02 290);
+  --accent-foreground: oklch(0.3 0 0);
+  
+  /* Borders and shadows */
+  --border: oklch(0.9 0 0);
+  --ring: oklch(0.65 0.1 290);
+  --shadow-color: 290 10% 0%;
+  
+  /* Status colors */
+  --success: oklch(0.7 0.2 150);
+  --warning: oklch(0.75 0.2 80);
+  --error: oklch(0.65 0.25 30);
+  
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px -2px rgba(var(--shadow-color) / 0.06);
+  --shadow-md: 0 4px 12px -2px rgba(var(--shadow-color) / 0.08);
+  --shadow-lg: 0 8px 16px -4px rgba(var(--shadow-color) / 0.1);
+  
+  /* Animation */
+  --transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-transform: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-opacity: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 60px;
+}

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas UI - Minimal Variation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F9FAFB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border-color: #E5E7EB;
+            --accent: #000000;
+            --radius: 16px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 24px;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 32px;
+        }
+
+        .right-panel {
+            width: 320px;
+            background: var(--bg-primary);
+            border-left: 1px solid var(--border-color);
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            padding: 24px;
+        }
+
+        .content-area {
+            margin-right: 320px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .thought-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .thought-card:hover {
+            border-color: var(--accent);
+        }
+
+        .input-box {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-box input {
+            background: transparent;
+            border: none;
+            flex: 1;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .input-box input:focus {
+            outline: none;
+        }
+
+        .tag {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .agent-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .theme-item {
+            padding: 16px;
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .theme-item:hover {
+            background: var(--bg-primary);
+            border: 1px solid var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Sidebar -->
+    <nav class="sidebar">
+        <div class="mb-8">
+            <span class="text-sm font-medium">2,205 entries</span>
+        </div>
+
+        <div class="space-y-1">
+            <div class="nav-item active">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span>Home</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                <span>Settings</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="message-square" class="w-5 h-5"></i>
+                <span>Feedback</span>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h3 class="text-xs uppercase tracking-wider text-gray-500 mb-3 px-4">Agents</h3>
+            <div class="space-y-1">
+                <div class="nav-item">
+                    <div class="agent-dot bg-blue-500"></div>
+                    <span>Chronos</span>
+                </div>
+                <div class="nav-item">
+                    <div class="agent-dot bg-purple-500"></div>
+                    <span>Nova</span>
+                </div>
+                <div class="nav-item">
+                    <div class="agent-dot bg-green-500"></div>
+                    <span>Clarity</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h3 class="text-xs uppercase tracking-wider text-gray-500 mb-3 px-4">Lists</h3>
+            <div class="space-y-1">
+                <div class="nav-item">
+                    <i data-lucide="dumbbell" class="w-5 h-5"></i>
+                    <span>Fitness</span>
+                    <span class="ml-auto text-xs">10</span>
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="target" class="w-5 h-5"></i>
+                    <span>Goals</span>
+                    <span class="ml-auto text-xs">9</span>
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="pen-tool" class="w-5 h-5"></i>
+                    <span>Writing</span>
+                    <span class="ml-auto text-xs">9</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-area">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                    <h1 class="text-xl font-medium">Ideas</h1>
+                    <div class="tag">18</div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input Box -->
+            <div class="input-box">
+                <input type="text" placeholder="What are you thinking?" />
+                <button class="p-2 hover:bg-gray-200 rounded-full">
+                    <i data-lucide="image" class="w-5 h-5"></i>
+                </button>
+                <button class="p-2 hover:bg-gray-200 rounded-full">
+                    <i data-lucide="paperclip" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Thoughts Feed -->
+            <div class="space-y-6">
+                <div class="thought-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="font-medium">Preparing for Launch | IFP</h3>
+                        <span class="text-sm text-gray-500">8:36 PM</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">The piece argues the U.S. should treat advanced-AI rollout like a moon-shot: push useful systems faster and hard-wire safety, or cede both wealth and security.</p>
+                    <div class="flex items-center gap-2">
+                        <div class="tag">AI</div>
+                        <div class="tag">Research</div>
+                    </div>
+                </div>
+
+                <div class="thought-card">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="font-medium">Insight-to-Action Loop</h3>
+                        <span class="text-sm text-gray-500">3:37 PM</span>
+                    </div>
+                    <p class="text-gray-600">This is the difference between competing on raw intelligence and competing on compounded insight. Between starting from zero every morning and standing on the shoulders of your entire intellectual history.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Panel -->
+    <aside class="right-panel">
+        <div class="mb-8">
+            <h2 class="text-lg font-medium mb-2">Weekly Distill</h2>
+            <p class="text-sm text-gray-600">Create a distillation of your week's insights and learnings.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="theme-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium">Knowledge Work</h3>
+                    <span class="text-xs text-gray-500">12 tasks</span>
+                </div>
+                <p class="text-sm text-gray-600">Focus on cognitive frameworks and tools for better thinking</p>
+            </div>
+
+            <div class="theme-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium">Product Strategy</h3>
+                    <span class="text-xs text-gray-500">8 tasks</span>
+                </div>
+                <p class="text-sm text-gray-600">Building scalable systems and user experiences</p>
+            </div>
+
+            <div class="theme-item">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-medium">Personal Growth</h3>
+                    <span class="text-xs text-gray-500">5 tasks</span>
+                </div>
+                <p class="text-sm text-gray-600">Habits, routines, and lifestyle optimization</p>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

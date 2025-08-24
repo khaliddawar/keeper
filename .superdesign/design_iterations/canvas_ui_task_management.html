@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management System - Thoughtkeeper Inspired</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #F8F7FF;
+            --bg-secondary: #FFFFFF;
+            --accent-1: #7C3AED;
+            --accent-2: #EC4899;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-radius: 16px;
+            
+            /* Notebook Colors */
+            --work-color: #3B82F6;
+            --personal-color: #10B981;
+            --health-color: #EF4444;
+            --hustles-color: #F59E0B;
+            --ideas-color: #8B5CF6;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 184, 0, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Canvas Container */
+        .canvas-container {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1), 
+                0 8px 16px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            position: relative;
+            max-width: 1600px;
+            margin: 0 auto;
+            height: calc(100vh - 32px);
+            min-height: 800px;
+            z-index: 1;
+        }
+
+        /* Condensed Sidebar */
+        .sidebar {
+            width: 64px;
+            background: var(--bg-secondary);
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            padding: 12px 6px;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            transition: width 0.3s ease;
+            overflow: hidden;
+            z-index: 50;
+            border-top-left-radius: 24px;
+            border-bottom-left-radius: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar:hover {
+            width: 240px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+
+        .nav-item.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        .nav-text {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar:hover .nav-text {
+            opacity: 1;
+        }
+
+        /* Main Content Adjustments */
+        .main-content {
+            margin-left: 64px;
+            padding: 32px;
+            height: 100%;
+            overflow-y: auto;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Main content adjustment when sidebar is hovered */
+        .sidebar:hover ~ .main-content {
+            margin-left: 240px;
+        }
+
+        /* Right Sidebar with Tabs */
+        .right-panel {
+            width: 320px;
+            background: var(--bg-secondary);
+            height: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            border-left: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+
+        .tabs-container {
+            padding: 12px 12px 0 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.02), transparent);
+            position: relative;
+        }
+
+        .tabs-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(0,0,0,0.1), transparent);
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto;
+            padding-bottom: 16px;
+            padding-top: 4px;
+            position: relative;
+        }
+
+        .tab {
+            padding: 8px 12px 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.08);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 56px;
+            
+            /* File tab shape with angled corners */
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+            
+            /* Professional file tab effect */
+            box-shadow: 
+                0 1px 3px rgba(0,0,0,0.08),
+                0 0 0 1px rgba(255,255,255,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.8),
+                inset 0 -1px 0 rgba(0,0,0,0.05);
+        }
+
+        /* Stacking rules moved below for better organization */
+
+        .tab:hover {
+            background: rgba(124, 58, 237, 0.08);
+            color: var(--accent-1);
+            transform: translateY(-1px);
+            z-index: 10 !important;
+            box-shadow: 
+                0 2px 8px rgba(0,0,0,0.12),
+                inset 0 1px 0 rgba(255,255,255,0.8);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #FFFFFF 0%, var(--bg-secondary) 100%);
+            color: var(--accent-1);
+            border-color: var(--accent-1);
+            border-bottom: 1px solid var(--bg-secondary);
+            z-index: 10 !important;
+            margin-bottom: -1px;
+            transform: translateY(-1px) scale(1.02);
+            
+            /* Enhanced active state with depth */
+            box-shadow: 
+                0 3px 16px rgba(124, 58, 237, 0.2),
+                0 1px 4px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,1),
+                inset 0 -1px 0 rgba(124, 58, 237, 0.1);
+            
+            /* Connect with content area seamlessly */
+            position: relative;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--bg-secondary);
+            z-index: 1;
+        }
+
+        .tab-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .notebook-item {
+            padding: 16px;
+            border-radius: var(--border-radius);
+            background: var(--bg-primary);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .notebook-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* Task Items */
+        .task-item {
+            padding: 20px;
+            border-radius: var(--border-radius);
+            background: var(--bg-secondary);
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .task-item.priority-high {
+            border-left-color: #EF4444;
+        }
+
+        .task-item.priority-medium {
+            border-left-color: #F59E0B;
+        }
+
+        .task-item.priority-low {
+            border-left-color: #10B981;
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+            background: #F9FAFB;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #D1D5DB;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .task-checkbox:checked {
+            background: var(--accent-1);
+            border-color: var(--accent-1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #E5E7EB;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-1);
+            transition: width 0.3s ease;
+        }
+
+        /* View Toggle Buttons */
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .view-toggle:hover {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--accent-1);
+        }
+
+        .view-toggle.active {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        /* Status Indicators */
+        .status-connected {
+            color: #10B981;
+        }
+
+        .status-processing {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Notebook Badges */
+        .notebook-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .notebook-work { background: var(--work-color); }
+        .notebook-personal { background: var(--personal-color); }
+        .notebook-health { background: var(--health-color); }
+        .notebook-hustles { background: var(--hustles-color); }
+        .notebook-ideas { background: var(--ideas-color); }
+
+        /* Priority Indicators */
+        .priority-high { color: #EF4444; }
+        .priority-medium { color: #F59E0B; }
+        .priority-low { color: #10B981; }
+
+        /* Custom scrollbar for tab list */
+        .tab-list::-webkit-scrollbar {
+            height: 2px;
+        }
+
+        .tab-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .tab-list::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.2);
+            border-radius: 2px;
+        }
+
+        .tab-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.3);
+        }
+
+        /* Notebook-specific tab colors */
+        .tab[data-notebook="work"] {
+            border-top-color: var(--work-color);
+        }
+        
+        .tab[data-notebook="work"].active {
+            border-top: 2px solid var(--work-color);
+            padding-top: 7px;
+        }
+
+        .tab[data-notebook="personal"] {
+            border-top-color: var(--personal-color);
+        }
+        
+        .tab[data-notebook="personal"].active {
+            border-top: 2px solid var(--personal-color);
+            padding-top: 7px;
+        }
+
+        .tab[data-notebook="health"] {
+            border-top-color: var(--health-color);
+        }
+        
+        .tab[data-notebook="health"].active {
+            border-top: 2px solid var(--health-color);
+            padding-top: 7px;
+        }
+
+        .tab[data-notebook="hustles"] {
+            border-top-color: var(--hustles-color);
+        }
+        
+        .tab[data-notebook="hustles"].active {
+            border-top: 2px solid var(--hustles-color);
+            padding-top: 7px;
+        }
+
+        .tab[data-notebook="ideas"] {
+            border-top-color: var(--ideas-color);
+        }
+        
+        .tab[data-notebook="ideas"].active {
+            border-top: 2px solid var(--ideas-color);
+            padding-top: 7px;
+        }
+
+        /* Enhanced file tab shadow for depth */
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 8px;
+            right: 8px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.9), transparent);
+            z-index: 1;
+        }
+
+        /* Tab selection animation */
+        .tab:active {
+            transform: translateY(0.5px) scale(0.98);
+        }
+
+        /* Improved stacking visual effect */
+        .tab:nth-child(1) { 
+            z-index: 5; 
+            margin-left: 0;
+        }
+        .tab:nth-child(2) { 
+            z-index: 4; 
+            margin-left: -6px;
+            filter: brightness(0.98);
+        }
+        .tab:nth-child(3) { 
+            z-index: 3; 
+            margin-left: -6px;
+            filter: brightness(0.96);
+        }
+        .tab:nth-child(4) { 
+            z-index: 2; 
+            margin-left: -6px;
+            filter: brightness(0.94);
+        }
+        .tab:nth-child(5) { 
+            z-index: 1; 
+            margin-left: -6px;
+            filter: brightness(0.92);
+        }
+
+        /* Active tab resets filters */
+        .tab.active {
+            filter: none;
+        }
+
+        .content-area {
+            margin-right: 320px;
+        }
+
+        .section-title {
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin: 16px 0 4px 8px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .sidebar:hover .section-title {
+            opacity: 1;
+        }
+
+        .agent-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .sidebar:hover .agent-dot {
+            margin-right: 0;
+        }
+
+        /* Icon sizing optimization */
+        .nav-item i[data-lucide] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Connection status styling */
+        .connection-status {
+            padding: 4px 6px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Navigation sections spacing */
+        .nav-section {
+            margin-bottom: 12px;
+        }
+
+        .nav-section:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Optimize sidebar scrolling */
+        .sidebar {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Ensure content doesn't get cut off when expanded */
+        .sidebar:hover {
+            padding: 12px 8px;
+        }
+
+        /* Scrollbar styling for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 2px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(124, 58, 237, 0.2);
+            border-radius: 2px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(124, 58, 237, 0.3);
+        }
+
+        /* Text size optimization */
+        .nav-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Large Screen Enhancement */
+        @media (min-width: 1400px) {
+            body {
+                padding: 32px;
+            }
+
+            .canvas-container {
+                height: calc(100vh - 64px);
+                border-radius: 32px;
+            }
+
+            .sidebar {
+                border-top-left-radius: 32px;
+                border-bottom-left-radius: 32px;
+            }
+
+            .right-panel {
+                border-top-right-radius: 32px;
+                border-bottom-right-radius: 32px;
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+
+            .canvas-container {
+                height: calc(100vh - 16px);
+                border-radius: 16px;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+                border-radius: 0;
+                border-top-left-radius: 16px;
+                border-bottom-left-radius: 16px;
+                padding: 8px 6px;
+            }
+
+            .sidebar:hover {
+                padding: 8px 6px;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
+                transition: none; /* Disable transition on mobile */
+            }
+
+            .content-area {
+                margin-right: 0;
+            }
+
+            /* Disable sidebar hover effects on mobile */
+            .sidebar:hover ~ .main-content {
+                margin-left: 0 !important;
+            }
+
+            .right-panel {
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                border-radius: 0;
+                border-top-right-radius: 16px;
+                border-bottom-right-radius: 16px;
+            }
+
+            .right-panel.mobile-open {
+                transform: translateX(0);
+            }
+
+            /* Mobile tab optimizations */
+            .tabs-container {
+                padding: 8px 8px 0 8px;
+            }
+
+            .tab {
+                font-size: 0.625rem;
+                padding: 6px 8px 4px 8px;
+            }
+
+            .tab i {
+                width: 10px !important;
+                height: 10px !important;
+                margin-right: 3px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas Container -->
+    <div class="canvas-container">
+        <!-- Condensed Left Sidebar -->
+    <nav class="sidebar">
+        <!-- Telegram Connection Status -->
+        <div class="connection-status">
+            <div class="nav-item">
+                <div class="w-1.5 h-1.5 bg-green-500 rounded-full status-connected"></div>
+                <span class="nav-text text-green-600" style="font-size: 0.75rem;">Connected</span>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <div class="nav-section">
+            <div class="nav-item active">
+                <i data-lucide="layout-dashboard"></i>
+                <span class="nav-text">Dashboard</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="check-square"></i>
+                <span class="nav-text">Tasks</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="calendar"></i>
+                <span class="nav-text">Calendar</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="brain"></i>
+                <span class="nav-text">Memories</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="settings"></i>
+                <span class="nav-text">Settings</span>
+            </div>
+        </div>
+
+        <!-- AI Agents Section -->
+        <div class="nav-section">
+            <div class="section-title nav-text">AI AGENTS</div>
+            <div class="nav-item">
+                <div class="agent-dot bg-blue-500"></div>
+                <span class="nav-text">Scheduler</span>
+            </div>
+            <div class="nav-item">
+                <div class="agent-dot bg-purple-500"></div>
+                <span class="nav-text">Classifier</span>
+            </div>
+            <div class="nav-item">
+                <div class="agent-dot bg-green-500"></div>
+                <span class="nav-text">Memory</span>
+            </div>
+        </div>
+
+        <!-- Quick Notebooks Section -->
+        <div class="nav-section">
+            <div class="section-title nav-text">NOTEBOOKS</div>
+            <div class="nav-item">
+                <i data-lucide="briefcase"></i>
+                <span class="nav-text">Work</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="home"></i>
+                <span class="nav-text">Personal</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="heart"></i>
+                <span class="nav-text">Health</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="zap"></i>
+                <span class="nav-text">Hustles</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="lightbulb"></i>
+                <span class="nav-text">Ideas</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-area">
+            <!-- Header with View Controls -->
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="check-square" class="w-6 h-6 text-accent-1"></i>
+                        <h1 class="text-lg font-semibold">Tasks</h1>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-xs font-medium">24</span>
+                    </div>
+                    
+                    <!-- View Toggle -->
+                    <div class="flex items-center gap-2 ml-8">
+                        <button class="view-toggle active" data-view="list">
+                            <i data-lucide="list" class="w-4 h-4"></i>
+                            <span class="text-sm">List</span>
+                        </button>
+                        <button class="view-toggle" data-view="kanban">
+                            <i data-lucide="columns" class="w-4 h-4"></i>
+                            <span class="text-sm">Kanban</span>
+                        </button>
+                        <button class="view-toggle" data-view="calendar">
+                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                            <span class="text-sm">Calendar</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Telegram Status -->
+                    <div class="flex items-center gap-2 text-xs status-connected">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i>
+                        <span>Last: 2 min ago</span>
+                    </div>
+                    
+                    <!-- Header Actions -->
+                    <button class="p-2 hover:bg-gray-100 rounded-full">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-2 hover:bg-gray-100 rounded-full relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Task Creation Input -->
+            <div class="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-gray-100">
+                <input type="text" placeholder="Add a task... e.g., 'remind me to call mom tomorrow at 4pm'" 
+                       class="w-full px-4 py-3 text-gray-700 focus:outline-none font-medium" />
+                <div class="flex items-center justify-between mt-4 px-4">
+                    <div class="flex items-center gap-2">
+                        <button class="p-2 hover:bg-gray-100 rounded-full" title="Add image">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                        </button>
+                        <button class="p-2 hover:bg-gray-100 rounded-full" title="Attach file">
+                            <i data-lucide="paperclip" class="w-5 h-5"></i>
+                        </button>
+                        <button class="p-2 hover:bg-gray-100 rounded-full" title="Voice note">
+                            <i data-lucide="mic" class="w-5 h-5"></i>
+                        </button>
+                        <button class="p-2 hover:bg-gray-100 rounded-full" title="Calendar event">
+                            <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500 status-processing">AI classifying...</span>
+                        <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            Add Task
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task List View -->
+            <div id="list-view" class="task-view active">
+                <!-- Urgent Tasks Section -->
+                <div class="mb-6">
+                    <h2 class="text-sm font-semibold text-red-600 mb-3 flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        Urgent (3)
+                    </h2>
+                    
+                    <div class="task-item priority-high">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" class="task-checkbox mt-1">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold">Call mom about birthday plans</h3>
+                                    <span class="notebook-badge notebook-personal">Personal</span>
+                                    <span class="priority-high">!!!</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Discuss venue options and guest list for her 70th birthday</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span class="flex items-center gap-1 text-red-600 font-medium">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>Today 4:00 PM
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>Linked to calendar
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="smartphone" class="w-4 h-4"></i>From Telegram
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 30%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 hover:bg-green-100 rounded-full" title="Complete">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-amber-100 rounded-full" title="Snooze">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-gray-100 rounded-full" title="Edit">
+                                    <i data-lucide="edit" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-item priority-high">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" class="task-checkbox mt-1">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold">Submit quarterly report</h3>
+                                    <span class="notebook-badge notebook-work">Work</span>
+                                    <span class="priority-high">!!!</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Q4 financial analysis and team performance metrics</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span class="flex items-center gap-1 text-red-600 font-medium">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>Due Tomorrow
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="users" class="w-4 h-4"></i>Team dependency
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 hover:bg-green-100 rounded-full" title="Complete">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-amber-100 rounded-full" title="Snooze">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-gray-100 rounded-full" title="Edit">
+                                    <i data-lucide="edit" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Tasks Section -->
+                <div class="mb-6">
+                    <h2 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                        Today (5)
+                    </h2>
+                    
+                    <div class="task-item priority-medium">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" class="task-checkbox mt-1">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold">Morning workout - cardio</h3>
+                                    <span class="notebook-badge notebook-health">Health</span>
+                                    <span class="priority-medium">!!</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">30 min treadmill + 15 min strength training</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>Today 7:00 AM
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="repeat" class="w-4 h-4"></i>Daily routine
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 hover:bg-green-100 rounded-full" title="Complete">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-amber-100 rounded-full" title="Snooze">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-gray-100 rounded-full" title="Edit">
+                                    <i data-lucide="edit" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-item priority-low completed">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" class="task-checkbox mt-1" checked>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold line-through">Review project proposals</h3>
+                                    <span class="notebook-badge notebook-work">Work</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3 line-through">Analysis of Q1 2024 project submissions</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span class="flex items-center gap-1 text-green-600">
+                                        <i data-lucide="check-circle" class="w-4 h-4"></i>Completed 2:30 PM
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-green-500" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Tasks Section -->
+                <div class="mb-6">
+                    <h2 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                        Upcoming (8)
+                    </h2>
+                    
+                    <div class="task-item priority-medium">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" class="task-checkbox mt-1">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold">Plan weekend hiking trip</h3>
+                                    <span class="notebook-badge notebook-personal">Personal</span>
+                                    <span class="priority-medium">!!</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Research trails, book accommodation, prepare gear list</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>Tomorrow 6:00 PM
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="map-pin" class="w-4 h-4"></i>Location research
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 20%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 hover:bg-green-100 rounded-full" title="Complete">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-amber-100 rounded-full" title="Snooze">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-gray-100 rounded-full" title="Edit">
+                                    <i data-lucide="edit" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-item priority-low">
+                        <div class="flex items-start gap-4">
+                            <input type="checkbox" class="task-checkbox mt-1">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <h3 class="font-semibold">Research AI automation tools</h3>
+                                    <span class="notebook-badge notebook-ideas">Ideas</span>
+                                    <span class="priority-low">!</span>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Explore integration possibilities for workflow optimization</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="clock" class="w-4 h-4"></i>This Weekend
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i data-lucide="lightbulb" class="w-4 h-4"></i>Brainstorming
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 10%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button class="p-2 hover:bg-green-100 rounded-full" title="Complete">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-amber-100 rounded-full" title="Snooze">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                                </button>
+                                <button class="p-2 hover:bg-gray-100 rounded-full" title="Edit">
+                                    <i data-lucide="edit" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban View (Hidden by default) -->
+            <div id="kanban-view" class="task-view hidden">
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold mb-4 flex items-center gap-2">
+                            <i data-lucide="circle" class="w-4 h-4 text-gray-500"></i>
+                            To Do <span class="text-sm text-gray-500">(8)</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-white p-3 rounded-lg shadow-sm border">
+                                <h4 class="font-medium text-sm">Morning workout</h4>
+                                <p class="text-xs text-gray-600">Health • Today 7AM</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg shadow-sm border">
+                                <h4 class="font-medium text-sm">Plan hiking trip</h4>
+                                <p class="text-xs text-gray-600">Personal • Tomorrow</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-amber-50 rounded-lg p-4">
+                        <h3 class="font-semibold mb-4 flex items-center gap-2">
+                            <i data-lucide="play-circle" class="w-4 h-4 text-amber-600"></i>
+                            In Progress <span class="text-sm text-gray-500">(3)</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-amber-500">
+                                <h4 class="font-medium text-sm">Submit quarterly report</h4>
+                                <p class="text-xs text-gray-600">Work • Due Tomorrow</p>
+                                <div class="progress-bar mt-2">
+                                    <div class="progress-fill bg-amber-500" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg shadow-sm border-l-4 border-purple-500">
+                                <h4 class="font-medium text-sm">Call mom about birthday</h4>
+                                <p class="text-xs text-gray-600">Personal • Today 4PM</p>
+                                <div class="progress-bar mt-2">
+                                    <div class="progress-fill bg-purple-500" style="width: 30%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <h3 class="font-semibold mb-4 flex items-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                            Done <span class="text-sm text-gray-500">(12)</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-white p-3 rounded-lg shadow-sm opacity-75">
+                                <h4 class="font-medium text-sm line-through">Review project proposals</h4>
+                                <p class="text-xs text-gray-600">Work • Completed 2:30 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar View (Hidden by default) -->
+            <div id="calendar-view" class="task-view hidden">
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">January 2025</h3>
+                        <div class="flex items-center gap-2">
+                            <button class="p-2 hover:bg-gray-100 rounded">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2 hover:bg-gray-100 rounded">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-2 text-center text-sm">
+                        <div class="p-2 font-medium text-gray-500">Sun</div>
+                        <div class="p-2 font-medium text-gray-500">Mon</div>
+                        <div class="p-2 font-medium text-gray-500">Tue</div>
+                        <div class="p-2 font-medium text-gray-500">Wed</div>
+                        <div class="p-2 font-medium text-gray-500">Thu</div>
+                        <div class="p-2 font-medium text-gray-500">Fri</div>
+                        <div class="p-2 font-medium text-gray-500">Sat</div>
+                        <!-- Calendar grid would continue here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Right Panel with Enhanced Notebooks -->
+    <aside class="right-panel">
+        <div class="tabs-container">
+            <div class="tab-list">
+                <button class="tab active" data-notebook="work">
+                    <i data-lucide="briefcase" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                    Work
+                </button>
+                <button class="tab" data-notebook="personal">
+                    <i data-lucide="home" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                    Personal
+                </button>
+                <button class="tab" data-notebook="health">
+                    <i data-lucide="heart" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                    Health
+                </button>
+                <button class="tab" data-notebook="hustles">
+                    <i data-lucide="zap" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                    Hustles
+                </button>
+                <button class="tab" data-notebook="ideas">
+                    <i data-lucide="lightbulb" style="width: 12px; height: 12px; margin-right: 4px;"></i>
+                    Ideas
+                </button>
+            </div>
+        </div>
+        
+        <div class="tab-content">
+            <!-- Work Notebook Content -->
+            <div id="work-content" class="notebook-content">
+                <div class="notebook-item">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-medium flex items-center gap-2">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>Product Strategy
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">8 tasks</span>
+                            <span class="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">2 urgent</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
+                    </div>
+                    <div class="space-y-1 mb-3">
+                        <div class="text-xs text-gray-600">• Quarterly report - Due Tomorrow</div>
+                        <div class="text-xs text-gray-600">• Team standup - Today 10am</div>
+                        <div class="text-xs text-gray-600">• Review proposals - Completed</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i>Add Task
+                        </button>
+                        <button class="text-xs text-gray-500 hover:text-gray-700">View All</button>
+                    </div>
+                </div>
+
+                <div class="notebook-item">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-medium flex items-center gap-2">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>Team Management
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">4 tasks</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 25%"></div>
+                    </div>
+                    <div class="space-y-1 mb-3">
+                        <div class="text-xs text-gray-600">• 1-on-1 meetings - This week</div>
+                        <div class="text-xs text-gray-600">• Performance reviews - Next month</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button class="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i>Add Task
+                        </button>
+                        <button class="text-xs text-gray-500 hover:text-gray-700">View All</button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="mt-6 pt-4 border-t border-gray-100">
+                    <h4 class="text-xs font-semibold text-gray-500 mb-2">RECENT ACTIVITY</h4>
+                    <div class="space-y-2">
+                        <div class="text-xs text-gray-600">✓ 2 tasks completed today</div>
+                        <div class="text-xs text-gray-600">⏰ 1 reminder set for tomorrow</div>
+                        <div class="text-xs text-gray-600">📱 3 tasks from Telegram this week</div>
+                    </div>
+                </div>
+
+                <!-- Mini Calendar -->
+                <div class="mt-6 pt-4 border-t border-gray-100">
+                    <h4 class="text-xs font-semibold text-gray-500 mb-2">UPCOMING EVENTS</h4>
+                    <div class="space-y-2">
+                        <div class="text-xs text-gray-600 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-3 h-3"></i>Team standup - Tomorrow 10am
+                        </div>
+                        <div class="text-xs text-gray-600 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-3 h-3"></i>Client meeting - Friday 2pm
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other notebook contents would be similar but hidden initially -->
+            <div id="personal-content" class="notebook-content hidden">
+                <div class="notebook-item">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-medium flex items-center gap-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>Family & Friends
+                        </h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">3 tasks</span>
+                            <span class="px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs">1 urgent</span>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 40%"></div>
+                    </div>
+                    <div class="space-y-1 mb-3">
+                        <div class="text-xs text-gray-600">• Call mom - Today 4pm</div>
+                        <div class="text-xs text-gray-600">• Plan hiking trip - Tomorrow</div>
+                    </div>
+                    <button class="text-xs text-purple-600 hover:text-purple-800 flex items-center gap-1">
+                        <i data-lucide="plus" class="w-3 h-3"></i>Add Task
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const notebookType = tab.dataset.notebook;
+                document.querySelectorAll('.notebook-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                const targetContent = document.getElementById(`${notebookType}-content`);
+                if (targetContent) {
+                    targetContent.classList.remove('hidden');
+                }
+            });
+        });
+
+        // View toggle functionality
+        document.querySelectorAll('.view-toggle').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.view-toggle').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Show corresponding view
+                const viewType = button.dataset.view;
+                document.querySelectorAll('.task-view').forEach(view => {
+                    view.classList.add('hidden');
+                });
+                const targetView = document.getElementById(`${viewType}-view`);
+                if (targetView) {
+                    targetView.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Task checkbox functionality
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const taskItem = e.target.closest('.task-item');
+                if (e.target.checked) {
+                    taskItem.classList.add('completed');
+                } else {
+                    taskItem.classList.remove('completed');
+                }
+            });
+        });
+
+        // Task item hover effects
+        document.querySelectorAll('.task-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-2px)';
+                item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(0)';
+                item.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+            });
+        });
+
+        // Notebook item hover effects
+        document.querySelectorAll('.notebook-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-2px)';
+                item.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+            });
+
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(0)';
+                item.style.boxShadow = 'none';
+            });
+        });
+
+        // Add Task functionality placeholder
+        document.querySelector('.bg-purple-600').addEventListener('click', () => {
+            const input = document.querySelector('input[type="text"]');
+            if (input.value.trim()) {
+                // Here you would normally add the task to the list
+                console.log('Adding task:', input.value);
+                input.value = '';
+            }
+        });
+
+        // Simulate AI processing status
+        function simulateAIProcessing() {
+            const statusEl = document.querySelector('.status-processing');
+            if (statusEl) {
+                setTimeout(() => {
+                    statusEl.textContent = 'Auto-sorted to Work notebook';
+                    statusEl.classList.remove('status-processing');
+                    statusEl.classList.add('text-green-600');
+                }, 2000);
+            }
+        }
+
+        // Run simulation on page load
+        setTimeout(simulateAIProcessing, 1000);
+    </script>
+    </div> <!-- End Canvas Container -->
+</body>
+</html>
