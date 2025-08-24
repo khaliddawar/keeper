@@ -567,7 +567,7 @@ export class JSONImportHandler implements ImportHandler {
     return priorityMap[normalized] || 'medium';
   }
 
-  private extractCustomFields(item: any): Record<string, any> {
+  private extractCustomFields(item: any): Record<string, any> | undefined {
     const standardFields = new Set([
       'id', 'title', 'description', 'content', 'notes', 'status', 'priority',
       'tags', 'category', 'color', 'isFavorite', 'isArchived', 'taskCount',

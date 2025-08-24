@@ -90,6 +90,7 @@ export type {
 } from './types';
 
 // Utility functions
+import type { KeyModifier, KeyboardShortcut, ShortcutConfig, ValidationResult, ShortcutExportData } from './types';
 export const KeyboardShortcutUtils = {
   /**
    * Format shortcut for display

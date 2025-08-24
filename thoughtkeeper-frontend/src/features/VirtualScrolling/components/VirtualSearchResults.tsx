@@ -195,7 +195,7 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
               
               {/* Main content - delegate to renderItem prop */}
               <div className="mb-3">
-                {renderItem(resultItem.item, index)}
+                {renderItem(resultItem as any, index)}
               </div>
               
               {/* Snippet */}

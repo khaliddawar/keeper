@@ -453,7 +453,7 @@ export class MarkdownExportHandler implements ExportHandler {
       return acc;
     }, {} as Record<string, number>);
 
-    return Object.entries(distribution).sort(([,a], [,b]) => b - a);
+    return (Object.entries(distribution) as Array<[string, number]>).sort(([, a], [, b]) => (b as number) - (a as number));
   }
 
   private getPriorityDistribution(tasks: any[]): Array<[string, number]> {
@@ -462,7 +462,7 @@ export class MarkdownExportHandler implements ExportHandler {
       return acc;
     }, {} as Record<string, number>);
 
-    return Object.entries(distribution).sort(([,a], [,b]) => b - a);
+    return (Object.entries(distribution) as Array<[string, number]>).sort(([, a], [, b]) => (b as number) - (a as number));
   }
 
   private groupNotebooksByCategory(notebooks: any[], config: ExportConfig): Record<string, any[]> {

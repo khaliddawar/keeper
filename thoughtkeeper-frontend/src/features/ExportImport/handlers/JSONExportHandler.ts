@@ -22,7 +22,8 @@ export class JSONExportHandler implements ExportHandler {
 
       // Remove metadata if not included
       if (!config.includeMetadata) {
-        delete processedData.metadata;
+        // Make sure metadata is optional in processed type
+        delete (processedData as Partial<typeof processedData>).metadata;
       }
 
       // Apply date range filter if specified
