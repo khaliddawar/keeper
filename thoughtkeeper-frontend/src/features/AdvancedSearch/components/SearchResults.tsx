@@ -15,7 +15,7 @@ export function SearchResults<T = any>({
   onLoadMore,
   className = ''
 }: SearchResultsProps<T>) {
-  const { state, updateSort, selectFacet, unselectFacet } = useAdvancedSearch();
+  const { state, updateSort } = useAdvancedSearch();
 
   /**
    * Handle sort change
@@ -99,9 +99,9 @@ export function SearchResults<T = any>({
                       checked={value.selected || false}
                       onChange={() => {
                         if (value.selected) {
-                          unselectFacet?.(facet.field, value.value);
+                          state.unselectFacet?.(facet.field, value.value);
                         } else {
-                          selectFacet?.(facet.field, value.value);
+                          state.selectFacet?.(facet.field, value.value);
                         }
                       }}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"

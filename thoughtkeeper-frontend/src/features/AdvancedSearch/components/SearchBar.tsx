@@ -17,13 +17,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const {
     state,
-    config,
     search,
     clearSearch,
     getSuggestions,
     openSearch,
-    setProvider,
-    toggleQuickFilter
+    setProvider
   } = useAdvancedSearch();
 
   const [inputValue, setInputValue] = useState('');
@@ -70,7 +68,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     }
 
     // Debounce search if real-time search is enabled
-    if (config.enableRealTimeSearch && value.trim().length > 2) {
+    if (state.config.enableRealTimeSearch && value.trim().length > 2) {
       const timeout = setTimeout(async () => {
         try {
           const results = await search(value);
@@ -78,11 +76,11 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         } catch (error) {
           console.error('Real-time search error:', error);
         }
-      }, config.debounceMs);
+      }, state.config.debounceMs);
 
       setSearchTimeout(timeout);
     }
-  }, [searchTimeout, getSuggestions, config.enableRealTimeSearch, config.debounceMs, search, onSearch]);
+  }, [searchTimeout, getSuggestions, state.config.enableRealTimeSearch, state.config.debounceMs, search, onSearch]);
 
   /**
    * Handle search submission
@@ -204,7 +202,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             onChange={(e) => handleProviderChange(e.target.value)}
             className="text-sm bg-transparent border-none outline-none text-gray-600 dark:text-gray-400 cursor-pointer"
           >
-            {config.providers.map(provider => (
+            {state.config.providers.map(provider => (
               <option key={provider.id} value={provider.id}>
                 {provider.name}
               </option>
@@ -291,7 +289,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           {state.quickFilters.map(filter => (
             <button
               key={filter.id}
-              onClick={() => toggleQuickFilter?.(filter.id)}
+              onClick={() => state.toggleQuickFilter?.(filter.id)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                 filter.enabled
                   ? `bg-${filter.color || 'blue'}-100 text-${filter.color || 'blue'}-700 dark:bg-${filter.color || 'blue'}-900 dark:text-${filter.color || 'blue'}-300`

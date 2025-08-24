@@ -11,7 +11,7 @@
  * - Development utilities and helpers
  */
 
-import {
+export {
   MOCK_DATA,
   generateMockData,
   getMockNotebooks,
@@ -26,30 +26,11 @@ import {
   getDueTasks
 } from './mockData';
 
-import {
+export {
   MockApiService,
   NotebooksApiMock,
   TasksApiMock
 } from './mockApi';
-
-// Re-export everything
-export {
-  MOCK_DATA,
-  generateMockData,
-  getMockNotebooks,
-  getMockTasks,
-  getMockUsers,
-  getMockStats,
-  searchNotebooks,
-  searchTasks,
-  getTasksByNotebook,
-  getSubtasks,
-  getOverdueTasks,
-  getDueTasks,
-  MockApiService,
-  NotebooksApiMock,
-  TasksApiMock
-};
 
 // Development utilities
 export const DevUtils = {

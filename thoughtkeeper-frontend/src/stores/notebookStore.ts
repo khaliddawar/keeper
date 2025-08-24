@@ -61,12 +61,6 @@ const calculateStats = (notebook: Notebook): NotebookStats => {
   const urgentTasks = notebook.urgentCount;
   
   return {
-    total: 1,
-    active: notebook.status === 'active' ? 1 : 0,
-    archived: notebook.archived ? 1 : 0,
-    shared: notebook.shared ? 1 : 0,
-    pinned: notebook.pinned ? 1 : 0,
-    totalWords: notebook.wordCount,
     totalTasks,
     completedTasks,
     pendingTasks: totalTasks - completedTasks,

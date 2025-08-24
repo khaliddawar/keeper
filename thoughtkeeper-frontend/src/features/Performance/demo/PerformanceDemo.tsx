@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { PerformanceProvider, useMemoryOptimization, useLazyLoading } from '../PerformanceProvider';
+import { PerformanceProvider, usePerformance, useMemoryOptimization, useLazyLoading } from '../PerformanceProvider';
 import { PerformanceDashboard } from '../components';
-// import type { PerformanceConfig } from '../types';
+import type { PerformanceConfig } from '../types';
 
 /**
  * Performance Demo Component
@@ -242,7 +242,7 @@ const PerformanceDemoContent: React.FC = () => {
                   <button
                     onClick={() => {
                       // Simulate memory leak
-                      const leakyTimers: NodeJS.Timeout[] = [];
+                      const leakyTimers = [];
                       for (let i = 0; i < 100; i++) {
                         leakyTimers.push(setInterval(() => {
                           console.log('Leaky timer', i);
@@ -427,7 +427,7 @@ const PerformanceDemoContent: React.FC = () => {
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         .performance-demo {
           min-height: 100vh;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

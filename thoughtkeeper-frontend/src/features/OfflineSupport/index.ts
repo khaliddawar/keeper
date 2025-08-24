@@ -18,20 +18,13 @@ export {
 } from './OfflineSupportProvider';
 
 // Components
-export {
-  ConflictResolutionPanel,
-  NetworkStatusIndicator,
-  OfflineCapabilities,
-  OfflineDashboard,
-  PWAInstallPrompt,
-  StorageQuotaIndicator
-} from './components';
+export * from './components';
 
 // Demo component
 export { OfflineSupportDemo } from './demo/OfflineSupportDemo';
 
 // Types
-export * from './types';
+export type * from './types';
 
 // Re-export key types for convenience
 export type {

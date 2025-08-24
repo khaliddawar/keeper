@@ -197,8 +197,8 @@ export class PerformanceEngine {
 
       case 'navigation':
         const navEntry = entry as PerformanceNavigationTiming;
-        // Calculate Time to Interactive (use startTime where navigationStart missing)
-        const tti = navEntry.domInteractive - (navEntry as any).navigationStart ?? navEntry.startTime;
+        // Calculate Time to Interactive (simplified)
+        const tti = navEntry.domInteractive - navEntry.navigationStart;
         this.updateCoreVital('tti', tti);
         break;
     }

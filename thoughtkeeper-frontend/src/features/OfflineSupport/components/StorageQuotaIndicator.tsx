@@ -104,7 +104,7 @@ export const StorageQuotaIndicator: React.FC<StorageQuotaIndicatorProps> = ({
           </div>
         )}
 
-        <style>{`
+        <style jsx>{`
           .storage-quota--compact {
             padding: 12px;
             background: white;
@@ -350,7 +350,7 @@ export const StorageQuotaIndicator: React.FC<StorageQuotaIndicatorProps> = ({
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
         .storage-quota--detailed {
           background: white;
           border: 1px solid #e2e8f0;

@@ -90,7 +90,7 @@ export const SavedSearches: React.FC<SavedSearchesProps> = ({
   /**
    * Generate search summary
    */
-  const getSearchSummary = useCallback((search: SavedSearch | SearchQuery): string => {
+  const getSearchSummary = useCallback((search: SavedSearch): string => {
     const parts: string[] = [];
 
     if (search.text) {

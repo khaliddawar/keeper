@@ -147,12 +147,16 @@ export * as Performance from './Performance';
 // Re-export commonly used performance components and hooks for convenience
 export {
   PerformanceProvider,
+  usePerformance,
   useMemoryOptimization,
   useLazyLoading,
   useBundleAnalysis,
   PerformanceDashboard,
+  MetricDisplay,
   BundleAnalyzer,
   MemoryProfiler,
+  LazyLoadManager,
+  OptimizationRecommendations,
   PerformanceDemo
 } from './Performance';
 
@@ -387,7 +391,7 @@ export class FeatureManager {
   
   disableFeature(feature: FeatureName): void {
     if (this.config[feature]) {
-      this.config[feature]!.enabled = false;
+      this.config[feature].enabled = false;
     }
   }
 }

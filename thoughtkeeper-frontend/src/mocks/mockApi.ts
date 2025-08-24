@@ -1,6 +1,5 @@
 import type { Notebook, CreateNotebookData, UpdateNotebookData, NotebookStats } from '../types/notebook';
-import type { Task, CreateTaskData, UpdateTaskData } from '../types/task';
-import { TaskStatus, TaskPriority } from '../types/task';
+import type { Task, TaskStatus, CreateTaskData, UpdateTaskData } from '../types/task';
 import { MOCK_DATA, getMockNotebooks, getMockTasks } from './mockData';
 
 /**
@@ -108,11 +107,6 @@ export class NotebooksApiMock {
         const aValue = a[options.sortBy as keyof Notebook];
         const bValue = b[options.sortBy as keyof Notebook];
         
-        // Handle undefined/null values
-        if (aValue == null && bValue == null) return 0;
-        if (aValue == null) return 1;
-        if (bValue == null) return -1;
-        
         if (aValue < bValue) return options.sortOrder === 'desc' ? 1 : -1;
         if (aValue > bValue) return options.sortOrder === 'desc' ? -1 : 1;
         return 0;
@@ -154,29 +148,20 @@ export class NotebooksApiMock {
     const notebook: Notebook = {
       id: generateId(),
       title: data.title,
-      name: data.name || data.title,
-      color: data.color || '#3B82F6',
-      icon: data.icon || 'notebook',
       description: data.description,
       content: data.content || '',
       status: data.status || 'draft',
       tags: data.tags || [],
-      taskCount: 0,
-      urgentCount: 0,
-      progressIndicator: 0,
-      recentActivity: now,
-      sortOrder: 0,
+      createdAt: now,
+      updatedAt: now,
+      ownerId: 'current-user', // Would be set by auth system
       shared: data.shared || false,
-      pinned: data.pinned || false,
-      archived: false, // New notebooks are not archived by default
+      pinned: false,
+      archived: false,
       wordCount: (data.content || '').split(' ').length,
       characterCount: (data.content || '').length,
       readingTime: Math.ceil((data.content || '').split(' ').length / 200),
-      attachments: data.attachments || [],
-      collaborators: [],
-      ownerId: 'current-user', // Would be set by auth system
-      createdAt: now,
-      updatedAt: now
+      attachments: data.attachments || []
     };
     
     this.notebooks.unshift(notebook);
@@ -369,11 +354,6 @@ export class TasksApiMock {
           bValue = bValue ? new Date(bValue as string).getTime() : 0;
         }
         
-        // Handle undefined/null values
-        if (aValue == null && bValue == null) return 0;
-        if (aValue == null) return 1;
-        if (bValue == null) return -1;
-        
         if (aValue < bValue) return options.sortOrder === 'desc' ? 1 : -1;
         if (aValue > bValue) return options.sortOrder === 'desc' ? -1 : 1;
         return 0;
@@ -416,24 +396,18 @@ export class TasksApiMock {
       id: generateId(),
       title: data.title,
       description: data.description,
-      status: TaskStatus.PENDING,
-      priority: data.priority || TaskPriority.MEDIUM,
+      status: 'pending',
+      priority: data.priority || 'medium',
       labels: data.labels || [],
       assignee: data.assignee,
       dueDate: data.dueDate,
       createdAt: now,
       updatedAt: now,
       completedAt: undefined,
-      progress: 0,
-      tags: data.tags || [],
-      timeEstimate: data.timeEstimate,
-      actualTimeSpent: undefined,
-      timeSpent: 0,
       notebookId: data.notebookId,
-      parentId: data.parentId,
-      attachments: [],
-      reminders: [],
-      integrations: []
+      parentId: data.parentId || null,
+      estimate: data.estimate,
+      timeSpent: 0
     };
     
     this.tasks.unshift(task);
@@ -454,10 +428,9 @@ export class TasksApiMock {
       ...task,
       ...data,
       updatedAt: new Date(),
-      completedAt: data.status === TaskStatus.COMPLETED ? (data.completedAt || new Date()) : 
-                    (data.status && data.status !== TaskStatus.COMPLETED ? undefined : 
+      completedAt: data.status === 'completed' ? data.completedAt || new Date() : 
+                    data.status !== 'completed' ? undefined : 
                     task.completedAt
-    );
     };
     
     this.tasks[taskIndex] = updatedTask;

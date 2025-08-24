@@ -74,7 +74,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
 
   // Format connection info
   const formatConnectionType = (type: string) => {
-    const types: Record<string, string> = {
+    const types = {
       'wifi': 'WiFi',
       'cellular': 'Mobile',
       'ethernet': 'Ethernet',
@@ -85,7 +85,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
   };
 
   const formatEffectiveType = (type: string) => {
-    const types: Record<string, string> = {
+    const types = {
       '2g': '2G',
       '3g': '3G',
       '4g': '4G',
@@ -122,7 +122,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
           </span>
         )}
 
-        <style>{`
+        <style jsx>{`
           .network-status--small {
             display: flex;
             align-items: center;
@@ -196,7 +196,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
           </div>
         )}
 
-        <style>{`
+        <style jsx>{`
           .network-status--compact {
             display: flex;
             flex-direction: column;
@@ -441,7 +441,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
         .network-status--detailed {
           background: white;
           border: 1px solid #e2e8f0;

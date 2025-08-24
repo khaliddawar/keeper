@@ -129,7 +129,7 @@ export const OfflineDashboard: React.FC<OfflineDashboardProps> = ({
           )}
         </div>
 
-        <style>{`
+        <style jsx>{`
           .offline-dashboard--compact {
             width: 300px;
             background: white;
@@ -462,7 +462,7 @@ export const OfflineDashboard: React.FC<OfflineDashboardProps> = ({
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         .offline-dashboard {
           max-width: 1200px;
           margin: 0 auto;

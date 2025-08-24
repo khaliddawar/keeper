@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { Task, TaskStatus, TaskPriority, TaskFilters, TaskSort, TaskStats, CreateTaskData, UpdateTaskRequest } from '../types/task';
+import { Task, TaskStatus, TaskPriority, TaskFilters, TaskSort, TaskStats, CreateTaskRequest, UpdateTaskRequest } from '../types/task';
 
 /**
  * TaskStore - Comprehensive state management for tasks
@@ -34,7 +34,7 @@ interface TaskStore {
   
   // Actions
   setTasks: (tasks: Task[]) => void;
-  addTask: (task: CreateTaskData) => void;
+  addTask: (task: CreateTaskRequest) => void;
   updateTask: (id: string, updates: UpdateTaskRequest) => void;
   deleteTask: (id: string) => void;
   deleteTasks: (ids: string[]) => void;
@@ -294,16 +294,10 @@ export const useTaskStore = create<TaskStore>()(
           dueDate: taskData.dueDate,
           progress: 0,
           tags: taskData.tags || [],
-          labels: taskData.labels || [],
           timeEstimate: taskData.timeEstimate,
-          actualTimeSpent: undefined,
-          timeSpent: 0,
-          assignee: taskData.assignee,
-          parentId: taskData.parentId,
-          parentTaskId: taskData.parentTaskId,
-          completedAt: undefined,
           createdAt: new Date(),
           updatedAt: new Date(),
+          parentTaskId: taskData.parentTaskId,
           attachments: [],
           reminders: [],
           integrations: []
@@ -559,14 +553,7 @@ export const useTaskStore = create<TaskStore>()(
             dueDate: Math.random() > 0.3 ? new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000) : undefined,
             progress: Math.floor(Math.random() * 101),
             tags: [`tag${Math.floor(Math.random() * 10)}`, `category${Math.floor(Math.random() * 5)}`],
-            labels: [`label${Math.floor(Math.random() * 10)}`, `status${Math.floor(Math.random() * 3)}`],
             timeEstimate: Math.floor(Math.random() * 480) + 30, // 30 minutes to 8 hours
-            actualTimeSpent: Math.random() > 0.5 ? Math.floor(Math.random() * 240) + 15 : undefined,
-            timeSpent: Math.floor(Math.random() * 120),
-            assignee: Math.random() > 0.7 ? `user-${Math.floor(Math.random() * 5) + 1}` : undefined,
-            parentId: undefined,
-            parentTaskId: undefined,
-            completedAt: undefined,
             createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000), // Last 90 days
             updatedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Last week
             attachments: [],

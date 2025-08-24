@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { MockApiService } from '../mocks';
-import type { Task, CreateTaskData, UpdateTaskData } from '../types/task';
-import { TaskStatus, TaskPriority } from '../types/task';
+import type { Task, TaskStatus, TaskPriority, CreateTaskData, UpdateTaskData } from '../types/task';
 
 /**
  * Tasks Store - Comprehensive state management for tasks
@@ -287,9 +286,9 @@ export const useTasksStore = create<TasksStore>()(
       
       // Status management
       setTaskStatus: async (id: string, status: TaskStatus) => {
-                const updateData: UpdateTaskData = {
+        const updateData: UpdateTaskData = { 
           status,
-          completedAt: status === TaskStatus.COMPLETED ? new Date() : undefined
+          completedAt: status === 'completed' ? new Date() : undefined
         };
         await get().updateTask(id, updateData);
       },
@@ -298,7 +297,7 @@ export const useTasksStore = create<TasksStore>()(
         const task = get().getTask(id);
         if (!task) return;
         
-        const newStatus: TaskStatus = task.status === TaskStatus.COMPLETED ? TaskStatus.PENDING : TaskStatus.COMPLETED;
+        const newStatus: TaskStatus = task.status === 'completed' ? 'pending' : 'completed';
         await get().setTaskStatus(id, newStatus);
       },
       

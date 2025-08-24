@@ -318,11 +318,11 @@ const getRandomDate = (start: Date, end: Date): Date => {
   return new Date(startTime + Math.random() * (endTime - startTime));
 };
 
-const getRandomElement = <T>(array: readonly T[]): T => {
+const getRandomElement = <T>(array: T[]): T => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
-const getRandomElements = <T>(array: readonly T[], count: number): T[] => {
+const getRandomElements = <T>(array: T[], count: number): T[] => {
   const shuffled = [...array].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, Math.min(count, array.length));
 };
@@ -346,18 +346,13 @@ const generateNotebooks = (count: number = 12): Notebook[] => {
     const notebook: Notebook = {
       id: generateId(),
       title: template.title + (i > 7 ? ` ${i - 7}` : ''),
-      name: template.title,
-      color: '#3B82F6',
-      icon: 'notebook',
       description: template.description,
       content: template.content,
       status: getRandomElement(['active', 'archived', 'draft'] as const),
       tags: template.tags,
-      taskCount: 0, // Will be updated later
-      urgentCount: 0, // Will be updated later
-      progressIndicator: 0, // Will be updated later
-      recentActivity: updatedAt,
-      sortOrder: i,
+      createdAt,
+      updatedAt,
+      ownerId: owner.id,
       shared: Math.random() > 0.7,
       pinned: Math.random() > 0.8,
       archived: Math.random() > 0.9,
@@ -365,11 +360,14 @@ const generateNotebooks = (count: number = 12): Notebook[] => {
       characterCount: template.content.replace(/\s/g, '').length,
       readingTime: Math.ceil(template.content.split(' ').length / 200),
       attachments: Math.random() > 0.6 ? [
-        `attachment-${Math.floor(Math.random() * 1000)}.pdf`
-      ] : [],
-      ownerId: owner.id,
-      createdAt,
-      updatedAt,
+        {
+          id: generateId(),
+          name: `attachment-${Math.floor(Math.random() * 1000)}.pdf`,
+          url: '#',
+          type: 'application/pdf',
+          size: Math.floor(Math.random() * 5000000)
+        }
+      ] : undefined,
       collaborators: Math.random() > 0.8 ? getRandomElements(
         USERS.filter(u => u.id !== owner.id), 
         Math.floor(Math.random() * 3) + 1
@@ -444,16 +442,10 @@ const generateTasks = (notebooks: Notebook[], tasksPerNotebook: number = 8): Tas
         createdAt,
         updatedAt: getRandomDate(createdAt, now),
         completedAt: status === 'completed' ? getRandomDate(createdAt, now) : undefined,
-        progress: status === 'completed' ? 100 : Math.floor(Math.random() * 80),
-        tags: getRandomElements(['work', 'personal', 'urgent', 'project', 'meeting'], Math.floor(Math.random() * 3)),
-        timeEstimate: Math.random() > 0.5 ? Math.floor(Math.random() * 480) + 30 : undefined, // 30 minutes to 8 hours
-        actualTimeSpent: status === 'completed' ? Math.floor(Math.random() * 360) + 15 : undefined,
-        timeSpent: status === 'completed' ? Math.floor(Math.random() * 360) + 15 : 0,
         notebookId: notebook.id,
-        parentId: undefined,
-        attachments: [],
-        reminders: [],
-        integrations: []
+        estimate: Math.random() > 0.5 ? Math.floor(Math.random() * 8) + 1 : undefined,
+        timeSpent: status === 'completed' ? Math.floor(Math.random() * 6) + 1 : undefined,
+        parentId: null
       };
       
       notebookTasks.push(task);
@@ -490,16 +482,10 @@ const generateTasks = (notebooks: Notebook[], tasksPerNotebook: number = 8): Tas
           createdAt: new Date(parentTask.createdAt.getTime() + j * 60 * 60 * 1000),
           updatedAt: getRandomDate(parentTask.createdAt, now),
           completedAt: Math.random() > 0.5 ? getRandomDate(parentTask.createdAt, now) : undefined,
-          progress: Math.random() > 0.5 ? Math.floor(Math.random() * 100) : 0,
-          tags: parentTask.tags,
-          timeEstimate: Math.floor(Math.random() * 120) + 15, // 15 minutes to 2 hours
-          actualTimeSpent: Math.random() > 0.5 ? Math.floor(Math.random() * 90) + 5 : undefined,
-          timeSpent: Math.floor(Math.random() * 90) + 5,
           notebookId: notebook.id,
           parentId: parentTask.id,
-          attachments: [],
-          reminders: [],
-          integrations: []
+          estimate: Math.floor(Math.random() * 3) + 1,
+          timeSpent: Math.floor(Math.random() * 2) + 1
         };
         
         tasks.push(subtask);

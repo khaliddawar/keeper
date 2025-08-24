@@ -524,7 +524,7 @@ export const MemoryProfiler: React.FC<MemoryMonitorProps> = ({
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         .memory-profiler {
           background: white;
           border: 1px solid #e2e8f0;

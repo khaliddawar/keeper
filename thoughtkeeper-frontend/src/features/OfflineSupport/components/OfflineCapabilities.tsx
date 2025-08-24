@@ -337,7 +337,7 @@ export const OfflineCapabilities: React.FC<OfflineCapabilitiesProps> = ({
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
         .offline-capabilities {
           background: white;
           border: 1px solid #e2e8f0;

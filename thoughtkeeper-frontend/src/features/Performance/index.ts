@@ -11,7 +11,7 @@ export { PerformanceProvider } from './PerformanceProvider';
 
 // Hooks for consuming components
 export {
-  // usePerformance, // not exported by provider
+  usePerformance,
   useMemoryOptimization,
   useLazyLoading,
   useBundleAnalysis
@@ -19,9 +19,12 @@ export {
 
 // Components
 export * from './components';
+export { MetricDisplay } from './components/MetricDisplay';
+export { LazyLoadManager } from './components/LazyLoadManager';
+export { OptimizationRecommendations } from './components/OptimizationRecommendations';
 
 // Demo component
 export { PerformanceDemo } from './demo/PerformanceDemo';
 
 // Types
-export * from './types';
+export type * from './types';

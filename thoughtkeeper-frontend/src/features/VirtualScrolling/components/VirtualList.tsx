@@ -24,7 +24,7 @@ export const VirtualList = forwardRef<any, VirtualListProps>(function VirtualLis
     enableSmoothScrolling = true,
     ...restProps
   }: VirtualListProps<T>,
-  ref: React.Ref<HTMLDivElement>
+  ref
 ) {
   const measurementRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   
@@ -73,14 +73,7 @@ export const VirtualList = forwardRef<any, VirtualListProps>(function VirtualLis
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
-    scrollTo: ((...args: any[]) => {
-      // Support both signatures
-      if (typeof args[0] === 'object') {
-        scrollTo(args[0] as ScrollToOptions);
-      } else {
-        scrollTo(args[0] as number, args[1] as number);
-      }
-    }) as any,
+    scrollTo: (options: ScrollToOptions) => scrollTo(options),
     scrollToTop,
     scrollToBottom,
     scrollToIndex: (index: number, alignment = scrollToAlignment) => 

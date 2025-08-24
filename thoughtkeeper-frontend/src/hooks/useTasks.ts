@@ -1,8 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useTasksStore } from '../stores';
 import { useUI } from './useUI';
-import type { Task, CreateTaskData, UpdateTaskData } from '../types/task';
-import { TaskStatus, TaskPriority } from '../types/task';
+import type { Task, TaskStatus, TaskPriority, CreateTaskData, UpdateTaskData } from '../types/task';
 
 interface TaskFilters {
   status?: TaskStatus | TaskStatus[];
@@ -119,12 +118,11 @@ export const useTasks = (options: UseTasksOptions = {}): UseTasksReturn => {
   
   const tasksByStatus = useMemo(() => {
     const grouped: Record<TaskStatus, Task[]> = {
-      [TaskStatus.PENDING]: [],
-      [TaskStatus.IN_PROGRESS]: [],
-      [TaskStatus.COMPLETED]: [],
-      [TaskStatus.CANCELLED]: [],
-      [TaskStatus.ON_HOLD]: [],
-      [TaskStatus.BLOCKED]: []
+      pending: [],
+      'in-progress': [],
+      completed: [],
+      cancelled: [],
+      on_hold: []
     };
     
     filteredTasks.forEach(task => {
@@ -211,15 +209,15 @@ export const useTasks = (options: UseTasksOptions = {}): UseTasksReturn => {
   }, [store, showSuccess, showError]);
   
   const markComplete = useCallback(async (id: string) => {
-    await updateTask(id, { status: TaskStatus.COMPLETED, completedAt: new Date() });
+    await updateTask(id, { status: 'completed', completedAt: new Date() });
   }, [updateTask]);
   
   const toggleComplete = useCallback(async (id: string) => {
     const task = store.getTask(id);
     if (!task) return;
     
-    if (task.status === TaskStatus.COMPLETED) {
-      await updateTask(id, { status: TaskStatus.PENDING, completedAt: undefined });
+    if (task.status === 'completed') {
+      await updateTask(id, { status: 'pending', completedAt: null });
     } else {
       await markComplete(id);
     }
@@ -281,7 +279,7 @@ export const useTasks = (options: UseTasksOptions = {}): UseTasksReturn => {
     
     markComplete,
     markIncomplete: async (id: string) => {
-      await updateTask(id, { status: TaskStatus.PENDING, completedAt: undefined });
+      await updateTask(id, { status: 'pending', completedAt: null });
     },
     toggleComplete,
     setStatus: async (id: string, status: TaskStatus) => {
@@ -299,13 +297,12 @@ export const useTasks = (options: UseTasksOptions = {}): UseTasksReturn => {
     },
     
     addSubtask: async (parentId: string, data: CreateTaskData) => {
-      if (!notebookId) throw new Error('Notebook ID is required');
-      const subtaskData = { ...data, parentId, notebookId };
+      const subtaskData = { ...data, parentId, notebookId: notebookId || undefined };
       return await createTask(subtaskData);
     },
     removeSubtask: deleteTask,
     promoteSubtask: async (subtaskId: string) => {
-      await updateTask(subtaskId, { parentId: undefined });
+      await updateTask(subtaskId, { parentId: null });
     },
     convertToSubtask: async (taskId: string, parentId: string) => {
       await updateTask(taskId, { parentId });

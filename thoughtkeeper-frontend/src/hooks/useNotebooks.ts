@@ -1,7 +1,7 @@
 import { useMemo, useCallback } from 'react';
 import { useNotebooksStore } from '../stores';
 import { useUI } from './useUI';
-import type { Notebook, NotebookStats, CreateNotebookData, UpdateNotebookData } from '../types/notebook';
+import type { Notebook, NotebookStats, NotebookQuery, CreateNotebookData, UpdateNotebookData } from '../types/notebook';
 
 /**
  * useNotebooks - Custom hook for notebook management

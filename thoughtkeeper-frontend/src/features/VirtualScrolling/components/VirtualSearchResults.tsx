@@ -1,13 +1,13 @@
 import React, { useMemo, useCallback } from 'react';
 import { VirtualList } from './VirtualList';
-import type { VirtualItemProps, VirtualizedSearchResults, SearchableItem, TaskLike } from '../types';
+import type { VirtualItemProps, VirtualizedSearchResults } from '../types';
 import type { SearchResultItem } from '../../AdvancedSearch/types';
 
 /**
  * Virtual Search Results Component
  * Virtualized search results with highlighting and metadata
  */
-interface VirtualSearchResultsProps<T extends SearchableItem = SearchableItem> extends VirtualizedSearchResults<T> {
+interface VirtualSearchResultsProps<T = any> extends VirtualizedSearchResults<T> {
   height?: number | string;
   className?: string;
   itemHeight?: number;
@@ -22,7 +22,7 @@ interface VirtualSearchResultsProps<T extends SearchableItem = SearchableItem> e
   selectedItems?: Set<string>;
 }
 
-export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>({
+export const VirtualSearchResults = <T = any,>({
   results,
   totalCount,
   renderItem,
@@ -41,24 +41,6 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
   onItemSelect,
   selectedItems = new Set()
 }: VirtualSearchResultsProps<T>) => {
-  /**
-   * Type guards to check item types
-   */
-  const isTaskLike = (item: SearchableItem): item is TaskLike => {
-    return 'status' in item || 'priority' in item || 'completed' in item || 'dueDate' in item;
-  };
-
-  const getItemType = (item: T): string => {
-    // Try to determine item type from its properties
-    if (isTaskLike(item)) {
-      return 'task';
-    }
-    if ('content' in item && 'wordCount' in item) {
-      return 'notebook';
-    }
-    return 'unknown';
-  };
-
   /**
    * Calculate dynamic item height based on search result content
    */
@@ -107,7 +89,7 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
       onItemClick?.(resultItem, index);
     };
     
-    const handleSelectClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       onItemSelect?.(resultItem, !isSelected);
     };
@@ -151,9 +133,9 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
                 <div className="flex items-center space-x-2">
                   {/* Result type indicator */}
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    getTypeColor(getItemType(resultItem.item))
+                    getTypeColor(resultItem.item?.type || 'unknown')
                   }`}>
-                    {getTypeLabel(getItemType(resultItem.item))}
+                    {getTypeLabel(resultItem.item?.type || 'unknown')}
                   </span>
                   
                   {/* Matched fields */}
@@ -195,7 +177,7 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
               
               {/* Main content - delegate to renderItem prop */}
               <div className="mb-3">
-                {renderItem(resultItem as any, index)}
+                {renderItem(resultItem.item, index)}
               </div>
               
               {/* Snippet */}
@@ -251,7 +233,7 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
                       </span>
                     )}
                     
-                    {resultItem.item.tags && resultItem.item.tags.length > 0 && (
+                    {resultItem.item?.tags && resultItem.item.tags.length > 0 && (
                       <span>
                         {resultItem.item.tags.length} tag{resultItem.item.tags.length !== 1 ? 's' : ''}
                       </span>
@@ -260,7 +242,7 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
                   
                   {/* Item-specific metadata */}
                   <div className="flex items-center space-x-2">
-                    {isTaskLike(resultItem.item) && resultItem.item.status && (
+                    {resultItem.item?.status && (
                       <span className={`px-2 py-0.5 rounded-full text-xs ${
                         getStatusColor(resultItem.item.status)
                       }`}>
@@ -268,7 +250,7 @@ export const VirtualSearchResults = <T extends SearchableItem = SearchableItem>(
                       </span>
                     )}
                     
-                    {isTaskLike(resultItem.item) && resultItem.item.priority && resultItem.item.priority !== 'medium' && (
+                    {resultItem.item?.priority && resultItem.item.priority !== 'medium' && (
                       <span className={`px-2 py-0.5 rounded-full text-xs ${
                         getPriorityColor(resultItem.item.priority)
                       }`}>

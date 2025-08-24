@@ -3,8 +3,6 @@
  * Defines interfaces for high-performance virtual scrolling
  */
 
-import type { SearchResultItem } from '../AdvancedSearch/types';
-
 // Core virtualization types
 export interface VirtualItem {
   id: string;
@@ -157,46 +155,11 @@ export interface VirtualizationStrategyConfig {
   cacheSize?: number;
 }
 
-// Base types for searchable items
-export interface SearchableItem {
-  id: string;
-  title?: string;
-  name?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  tags?: string[];
-}
-
-export interface TaskLike extends SearchableItem {
-  status?: string;
-  priority?: string;
-  description?: string;
-  dueDate?: Date;
-  progress?: number;
-  assignee?: string;
-  labels?: string[];
-  timeEstimate?: number;
-  subtasks?: any[];
-  completed?: boolean;
-  completedAt?: Date;
-}
-
-export interface NotebookLike extends SearchableItem {
-  description?: string;
-  content?: string;
-  status?: string;
-  color?: string;
-  icon?: string;
-  taskCount?: number;
-  shared?: boolean;
-  pinned?: boolean;
-}
-
 // Integration with existing components
-export interface VirtualizedSearchResults<T extends SearchableItem = SearchableItem> {
-  results: SearchResultItem<T>[];
+export interface VirtualizedSearchResults<T = any> {
+  results: T[];
   totalCount: number;
-  renderItem: (item: SearchResultItem<T>, index: number) => React.ReactNode;
+  renderItem: (item: T, index: number) => React.ReactNode;
   onLoadMore?: () => void;
   loading?: boolean;
 }

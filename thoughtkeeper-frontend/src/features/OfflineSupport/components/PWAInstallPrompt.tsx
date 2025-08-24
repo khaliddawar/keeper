@@ -137,7 +137,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
           </div>
         </div>
 
-        <style>{`
+        <style jsx>{`
           .pwa-install-prompt--banner {
             position: fixed;
             top: 0;
@@ -306,7 +306,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
           )}
         </div>
 
-        <style>{`
+        <style jsx>{`
           .pwa-install-prompt--compact {
             background: white;
             border: 1px solid #e2e8f0;
@@ -551,7 +551,7 @@ export const PWAInstallPrompt: React.FC<PWAInstallPromptProps> = ({
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
         .pwa-install-prompt--detailed {
           background: white;
           border: 1px solid #e2e8f0;

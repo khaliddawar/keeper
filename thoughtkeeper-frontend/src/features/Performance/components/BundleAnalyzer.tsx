@@ -101,7 +101,7 @@ export const BundleAnalyzer: React.FC<BundleAnalyzerProps> = ({
           </p>
         </div>
 
-        <style>{`
+        <style jsx>{`
           .bundle-analyzer {
             background: white;
             border: 1px solid #e2e8f0;
@@ -170,7 +170,7 @@ export const BundleAnalyzer: React.FC<BundleAnalyzerProps> = ({
           </button>
         </div>
 
-        <style>{`
+        <style jsx>{`
           .bundle-analyzer {
             background: white;
             border: 1px solid #e2e8f0;
@@ -565,7 +565,7 @@ export const BundleAnalyzer: React.FC<BundleAnalyzerProps> = ({
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         .bundle-analyzer {
           background: white;
           border: 1px solid #e2e8f0;

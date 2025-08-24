@@ -89,7 +89,7 @@ export const VirtualTaskList: React.FC<VirtualTaskListProps> = ({
       onTaskComplete(task.id);
     };
     
-    const handleSelectClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       onTaskSelect?.(task.id, !isSelected);
     };
@@ -208,7 +208,7 @@ export const VirtualTaskList: React.FC<VirtualTaskListProps> = ({
               {/* Subtasks preview */}
               {showSubtasks && task.subtasks && task.subtasks.length > 0 && (
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                  <span className="font-medium">{task.subtasks.filter(st => st.completedAt).length}</span>
+                  <span className="font-medium">{task.subtasks.filter(st => st.completed).length}</span>
                   <span> / </span>
                   <span>{task.subtasks.length}</span>
                   <span> subtasks completed</span>
@@ -218,7 +218,7 @@ export const VirtualTaskList: React.FC<VirtualTaskListProps> = ({
                     <div
                       className="bg-blue-600 h-1.5 rounded-full"
                       style={{
-                        width: `${(task.subtasks.filter(st => st.completedAt).length / task.subtasks.length) * 100}%`
+                        width: `${(task.subtasks.filter(st => st.completed).length / task.subtasks.length) * 100}%`
                       }}
                     />
                   </div>
@@ -334,12 +334,10 @@ const PriorityIndicator: React.FC<{ priority: TaskPriority }> = ({ priority }) =
  */
 const StatusIndicator: React.FC<{ status: TaskStatus }> = ({ status }) => {
   const config = {
-    'pending': { color: 'bg-gray-500', label: 'Pending', icon: '⏳' },
-    'in-progress': { color: 'bg-blue-500', label: 'In Progress', icon: '🔄' },
-    'completed': { color: 'bg-green-500', label: 'Completed', icon: '✅' },
-    'cancelled': { color: 'bg-red-500', label: 'Cancelled', icon: '❌' },
-    'on-hold': { color: 'bg-yellow-500', label: 'On Hold', icon: '⏸️' },
-    'blocked': { color: 'bg-red-600', label: 'Blocked', icon: '🚫' }
+    pending: { color: 'bg-gray-500', label: 'Pending', icon: '⏳' },
+    in_progress: { color: 'bg-blue-500', label: 'In Progress', icon: '🔄' },
+    completed: { color: 'bg-green-500', label: 'Completed', icon: '✅' },
+    cancelled: { color: 'bg-red-500', label: 'Cancelled', icon: '❌' }
   };
   
   const { color, label, icon } = config[status];

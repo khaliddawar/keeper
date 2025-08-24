@@ -5,7 +5,7 @@
 
 // Core Components
 export { default as VirtualList } from './components/VirtualList';
-export { VirtualItem as VirtualItemComponent } from './components/VirtualList';
+export { VirtualItem } from './components/VirtualList';
 
 // Specialized Components
 export { VirtualTaskList } from './components/VirtualTaskList';
@@ -92,7 +92,7 @@ export const VirtualScrollUtils = {
     itemIndex: number,
     itemHeight: number,
     containerHeight: number,
-    alignment: 'start' | 'center' | 'end' | 'auto' = 'center'
+    alignment: ScrollAlignment = 'center'
   ): number => {
     const itemTop = itemIndex * itemHeight;
     
@@ -296,7 +296,7 @@ export const VirtualScrollCapabilities = {
   /**
    * Get optimal configuration based on device and dataset size
    */
-  getOptimalConfig: (itemCount: number, isMobile = false) => {
+  getOptimalConfig: (itemCount: number, isMobile = false): VirtualScrollConfig => {
     if (isMobile) {
       return VirtualScrollPresets.mobile;
     }
@@ -337,7 +337,7 @@ export const VirtualScrollMonitoring = {
   /**
    * Create performance observer for virtual scroll metrics
    */
-  createPerformanceObserver: (callback: (metrics: any) => void) => {
+  createPerformanceObserver: (callback: (metrics: VirtualScrollMetrics) => void) => {
     if ('PerformanceObserver' in window) {
       const observer = new PerformanceObserver((list) => {
         const entries = list.getEntries();

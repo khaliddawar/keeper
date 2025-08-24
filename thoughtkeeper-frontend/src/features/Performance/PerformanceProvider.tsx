@@ -10,6 +10,7 @@ import { PerformanceEngine } from './PerformanceEngine';
 import type {
   PerformanceContextValue,
   PerformanceOptimizationConfig,
+  PerformanceConfig,
   CoreWebVitals,
   MemoryMetrics,
   RuntimeMetrics,
@@ -31,7 +32,7 @@ const PerformanceContext = createContext<PerformanceContextValue | null>(null);
 // Provider Props
 export interface PerformanceProviderProps {
   children: React.ReactNode;
-  config?: Partial<PerformanceOptimizationConfig>;
+  config?: Partial<PerformanceOptimizationConfig> | PerformanceConfig;
   enableAutoOptimization?: boolean;
   enableProfiling?: boolean;
   onPerformanceEvent?: (event: PerformanceEvent) => void;
@@ -483,7 +484,7 @@ export const useBundleAnalysis = (): UseBundleAnalysisReturn => {
     return bundleAnalysis?.recommendations || [];
   }, [bundleAnalysis]);
 
-  const estimateSavings = useCallback((recommendation: any) => {
+  const estimateSavings = useCallback((recommendation) => {
     return recommendation.estimatedSavings || 0;
   }, []);
 
@@ -575,7 +576,7 @@ export const usePerformanceAlerts = () => {
     if (!context) return;
 
     const checkForAlerts = () => {
-      const newAlerts: any[] = [];
+      const newAlerts = [];
 
       // Memory pressure alerts
       if (context.memoryMetrics.memoryPressure === 'high' || context.memoryMetrics.memoryPressure === 'critical') {
@@ -646,3 +647,6 @@ export const usePerformanceAlerts = () => {
 
 // Export context for advanced usage
 export { PerformanceContext };
+
+// Export main hook
+export const usePerformance = usePerformanceMonitoring;

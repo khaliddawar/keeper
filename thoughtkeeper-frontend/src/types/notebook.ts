@@ -1,197 +1,87 @@
-// Notebook type definitions
+/**
+ * Notebook Types
+ * 
+ * Core type definitions for notebook entities in the ThoughtKeeper application.
+ * Notebooks are the primary organizational unit for tasks and content.
+ */
 
+// Notebook status type
+export type NotebookStatus = 'active' | 'archived' | 'draft';
+
+// Notebook collaborator role
+export type CollaboratorRole = 'viewer' | 'editor' | 'owner';
+
+// Sort direction
+export type SortDirection = 'asc' | 'desc';
+
+// Notebook entity
 export interface Notebook {
   id: string;
   title: string;
-  name: string;
-  color: string;
-  icon: string;
   description?: string;
   content?: string;
-  status: 'active' | 'archived' | 'draft';
+  status: NotebookStatus;
   tags: string[];
-  taskCount: number;
-  urgentCount: number;
-  progressIndicator: number; // 0-100 percentage
-  recentActivity?: Date;
-  sortOrder: number;
+  color?: string;
+  icon?: string;
+  ownerId: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
   shared: boolean;
   pinned: boolean;
   archived: boolean;
   wordCount: number;
   characterCount: number;
   readingTime: number;
-  attachments: string[];
-  collaborators?: Array<{
-    userId: string;
-    role: 'viewer' | 'editor';
-    addedAt: Date;
-  }>;
-  ownerId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  attachments?: Attachment[];
+  collaborators?: Collaborator[];
 }
 
-export interface CreateNotebookRequest {
+// Attachment interface
+export interface Attachment {
+  id: string;
   name: string;
-  color: string;
-  icon: string;
-  description?: string;
-  sortOrder?: number;
+  type: string;
+  size: number;
+  url: string;
+  uploadedAt: Date | string;
 }
 
-export interface UpdateNotebookRequest {
-  name?: string;
-  color?: string;
-  icon?: string;
-  description?: string;
-  sortOrder?: number;
+// Collaborator interface
+export interface Collaborator {
+  userId: string;
+  role: CollaboratorRole;
+  addedAt: Date | string;
 }
 
-// Data interfaces used by stores and API
+// Create notebook data
 export interface CreateNotebookData {
   title: string;
-  name?: string;
   description?: string;
   content?: string;
-  status?: 'active' | 'archived' | 'draft';
+  status?: NotebookStatus;
   tags?: string[];
   color?: string;
   icon?: string;
   shared?: boolean;
   pinned?: boolean;
-  attachments?: string[];
 }
 
+// Update notebook data
 export interface UpdateNotebookData {
   title?: string;
-  name?: string;
   description?: string;
   content?: string;
-  status?: 'active' | 'archived' | 'draft';
+  status?: NotebookStatus;
   tags?: string[];
   color?: string;
   icon?: string;
   shared?: boolean;
   pinned?: boolean;
   archived?: boolean;
-  attachments?: string[];
 }
 
-// Notebook type enum for predefined categories
-export enum NotebookType {
-  WORK = 'work',
-  PERSONAL = 'personal',
-  HEALTH = 'health',
-  HUSTLES = 'hustles',
-  IDEAS = 'ideas'
-}
-
-// Default notebook configurations
-export const DEFAULT_NOTEBOOKS: Record<NotebookType, Omit<Notebook, 'id' | 'taskCount' | 'urgentCount' | 'progressIndicator' | 'recentActivity' | 'createdAt' | 'updatedAt'>> = {
-  [NotebookType.WORK]: {
-    title: 'Work',
-    name: 'Work',
-    color: '#3B82F6',
-    icon: 'briefcase',
-    description: 'Professional tasks and projects',
-    content: 'Professional notebook for work-related tasks and projects',
-    status: 'active' as const,
-    tags: ['work', 'professional'],
-    shared: false,
-    pinned: false,
-    archived: false,
-    wordCount: 0,
-    characterCount: 0,
-    readingTime: 0,
-    attachments: [],
-    collaborators: [],
-    ownerId: '',
-    sortOrder: 1
-  },
-  [NotebookType.PERSONAL]: {
-    title: 'Personal',
-    name: 'Personal',
-    color: '#10B981',
-    icon: 'home',
-    description: 'Personal tasks and life management',
-    content: 'Personal notebook for life management and personal tasks',
-    status: 'active' as const,
-    tags: ['personal', 'life'],
-    shared: false,
-    pinned: false,
-    archived: false,
-    wordCount: 0,
-    characterCount: 0,
-    readingTime: 0,
-    attachments: [],
-    collaborators: [],
-    ownerId: '',
-    sortOrder: 2
-  },
-  [NotebookType.HEALTH]: {
-    title: 'Health',
-    name: 'Health',
-    color: '#EF4444',
-    icon: 'heart',
-    description: 'Health, fitness, and wellness goals',
-    content: 'Health notebook for fitness tracking and wellness goals',
-    status: 'active' as const,
-    tags: ['health', 'fitness', 'wellness'],
-    shared: false,
-    pinned: false,
-    archived: false,
-    wordCount: 0,
-    characterCount: 0,
-    readingTime: 0,
-    attachments: [],
-    collaborators: [],
-    ownerId: '',
-    sortOrder: 3
-  },
-  [NotebookType.HUSTLES]: {
-    title: 'Hustles',
-    name: 'Hustles',
-    color: '#F59E0B',
-    icon: 'trending-up',
-    description: 'Trading, side projects, and business ventures',
-    content: 'Hustles notebook for trading and business ventures',
-    status: 'active' as const,
-    tags: ['business', 'trading', 'projects'],
-    shared: false,
-    pinned: false,
-    archived: false,
-    wordCount: 0,
-    characterCount: 0,
-    readingTime: 0,
-    attachments: [],
-    collaborators: [],
-    ownerId: '',
-    sortOrder: 4
-  },
-  [NotebookType.IDEAS]: {
-    title: 'Ideas',
-    name: 'Ideas',
-    color: '#8B5CF6',
-    icon: 'lightbulb',
-    description: 'Creative ideas and future projects',
-    content: 'Ideas notebook for creative concepts and future projects',
-    status: 'active' as const,
-    tags: ['ideas', 'creative', 'future'],
-    shared: false,
-    pinned: false,
-    archived: false,
-    wordCount: 0,
-    characterCount: 0,
-    readingTime: 0,
-    attachments: [],
-    collaborators: [],
-    ownerId: '',
-    sortOrder: 5
-  }
-};
-
-// Notebook statistics interface
+// Notebook statistics
 export interface NotebookStats {
   total: number;
   active: number;
@@ -201,21 +91,53 @@ export interface NotebookStats {
   totalWords: number;
   totalTasks: number;
   completedTasks: number;
-  pendingTasks?: number;
-  urgentTasks?: number;
-  overdueTasks?: number;
-  progressPercentage?: number;
-  averageCompletionTime?: number; // in hours
-  lastActivity?: Date | null;
 }
 
-// Notebook filter and sort options
-export interface NotebookFilters {
-  searchQuery?: string;
-  hasUrgentTasks?: boolean;
-  hasOverdueTasks?: boolean;
-  sortBy: 'name' | 'taskCount' | 'recentActivity' | 'sortOrder';
-  sortDirection: 'asc' | 'desc';
+// Notebook query options
+export interface NotebookQueryOptions {
+  search?: string;
+  status?: NotebookStatus;
+  tags?: string[];
+  shared?: boolean;
+  archived?: boolean;
+  sortBy?: 'title' | 'createdAt' | 'updatedAt' | 'wordCount';
+  sortOrder?: SortDirection;
+  limit?: number;
+  offset?: number;
 }
 
-export type NotebookSortOption = NotebookFilters['sortBy'];
+// Notebook creation request
+export interface CreateNotebookRequest extends CreateNotebookData {
+  // Additional fields for API request if needed
+}
+
+// Notebook update request
+export interface UpdateNotebookRequest extends UpdateNotebookData {
+  // Additional fields for API request if needed
+}
+
+// Notebook response from API
+export interface NotebookResponse {
+  notebook: Notebook;
+  message?: string;
+}
+
+// Notebooks list response
+export interface NotebooksResponse {
+  notebooks: Notebook[];
+  total: number;
+  hasMore: boolean;
+}
+
+// Notebook activity
+export interface NotebookActivity {
+  id: string;
+  notebookId: string;
+  userId: string;
+  action: 'created' | 'updated' | 'shared' | 'archived' | 'deleted';
+  timestamp: Date | string;
+  details?: string;
+}
+
+// Integration types for notebooks
+export type NotebookIntegrationType = 'google-drive' | 'dropbox' | 'notion' | 'obsidian';

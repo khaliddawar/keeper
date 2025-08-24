@@ -98,7 +98,7 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
 
   // Get entity type display name
   const getEntityTypeName = (type: string) => {
-    const names: Record<string, string> = {
+    const names = {
       'notebook': 'Notebook',
       'task': 'Task',
       'project': 'Project'
@@ -358,7 +358,7 @@ export const ConflictResolutionPanel: React.FC<ConflictResolutionPanelProps> = (
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
         .conflict-resolution-panel {
           background: white;
           border: 1px solid #e2e8f0;

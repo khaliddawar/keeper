@@ -70,14 +70,14 @@ export const VirtualNotebookList: React.FC<VirtualNotebookListProps> = ({
    */
   const renderNotebookItem = useCallback(({ index, item: notebook, style, isVisible, isScrolling }: VirtualItemProps<Notebook>) => {
     const isSelected = selectedNotebookIds.has(notebook.id);
-    const isArchived = notebook.archived;
-    const isFavorite = notebook.pinned;
+    const isArchived = notebook.isArchived;
+    const isFavorite = notebook.isFavorite;
     
     const handleNotebookClick = () => {
       onNotebookClick(notebook);
     };
     
-    const handleSelectClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectClick = (e: React.MouseEvent) => {
       e.stopPropagation();
       onNotebookSelect?.(notebook.id, !isSelected);
     };
@@ -234,11 +234,11 @@ export const VirtualNotebookList: React.FC<VirtualNotebookListProps> = ({
                     <div className="flex -space-x-1">
                       {notebook.collaborators.slice(0, 3).map((collaborator, idx) => (
                         <div
-                          key={`${collaborator.userId}-${idx}`}
+                          key={`${collaborator}-${idx}`}
                           className="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold border-2 border-white dark:border-gray-700"
-                          title={`${collaborator.userId} (${collaborator.role})`}
+                          title={collaborator}
                         >
-                          {collaborator.userId.charAt(0).toUpperCase()}
+                          {collaborator.charAt(0).toUpperCase()}
                         </div>
                       ))}
                     </div>

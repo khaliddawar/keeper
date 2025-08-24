@@ -66,7 +66,7 @@ export const SyncStatusPanel: React.FC<SyncStatusPanelProps> = ({
 
   // Format operation type
   const formatOperationType = (type: string) => {
-    const types: Record<string, string> = {
+    const types = {
       'data_sync': 'Data Sync',
       'schema_migration': 'Schema Migration',
       'cache_update': 'Cache Update',
@@ -78,7 +78,7 @@ export const SyncStatusPanel: React.FC<SyncStatusPanelProps> = ({
 
   // Format operation action
   const formatOperation = (operation: string) => {
-    const operations: Record<string, string> = {
+    const operations = {
       'create': '➕ Create',
       'update': '✏️ Update',
       'delete': '🗑️ Delete'
@@ -88,7 +88,7 @@ export const SyncStatusPanel: React.FC<SyncStatusPanelProps> = ({
 
   // Get priority color
   const getPriorityColor = (priority: string) => {
-    const colors: Record<string, string> = {
+    const colors = {
       'critical': '#dc2626',
       'high': '#ea580c',
       'medium': '#f59e0b',
@@ -371,7 +371,7 @@ export const SyncStatusPanel: React.FC<SyncStatusPanelProps> = ({
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
         .sync-status-panel {
           background: white;
           border: 1px solid #e2e8f0;

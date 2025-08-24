@@ -116,7 +116,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           </div>
         )}
 
-        <style>{`
+        <style jsx>{`
           .performance-dashboard--compact {
             background: white;
             border: 1px solid #e2e8f0;
@@ -682,7 +682,7 @@ export const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         .performance-dashboard--full {
           background: white;
           border: 1px solid #e2e8f0;

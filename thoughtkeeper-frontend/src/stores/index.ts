@@ -22,19 +22,12 @@ export type {
   ViewMode 
 } from './uiStore';
 
-// Import the initialization functions directly
-import { initializeNotebooksStore as initNotebooks } from './notebooksStore';
-import { initializeTasksStore as initTasks } from './tasksStore';
-import { useNotebooksStore as notebooksStore } from './notebooksStore';
-import { useTasksStore as tasksStore } from './tasksStore';
-import { useUIStore as uiStore } from './uiStore';
-
 // Initialize all stores function
 export const initializeStores = async () => {
   try {
     await Promise.all([
-      initNotebooks(),
-      initTasks()
+      initializeNotebooksStore(),
+      initializeTasksStore()
     ]);
     console.log('✅ All stores initialized successfully');
   } catch (error) {
@@ -51,9 +44,9 @@ export const cleanupStores = () => {
 // Development utilities
 if (process.env.NODE_ENV === 'development') {
   (window as any).stores = {
-    notebooks: notebooksStore,
-    tasks: tasksStore,
-    ui: uiStore,
+    notebooks: useNotebooksStore,
+    tasks: useTasksStore,
+    ui: useUIStore,
     initializeAll: initializeStores,
     cleanup: cleanupStores
   };

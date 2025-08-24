@@ -545,6 +545,9 @@ export interface PerformanceDashboardProps {
   showRecommendations?: boolean;
   showTimeline?: boolean;
   refreshInterval?: number;
+  showMemoryProfiler?: boolean;
+  showBundleAnalyzer?: boolean;
+  showOptimizations?: boolean;
 }
 
 export interface MemoryMonitorProps {
@@ -563,6 +566,25 @@ export interface PerformanceProfilerProps {
   enabled?: boolean;
   sampleRate?: number;
   showControls?: boolean;
+}
+
+export interface MetricDisplayProps {
+  name: string;
+  value: number;
+  unit?: string;
+  trend?: 'up' | 'down' | 'stable';
+  color?: string;
+}
+
+export interface LazyLoadProps {
+  threshold?: number;
+  rootMargin?: string;
+  children?: React.ReactNode;
+}
+
+export interface OptimizationProps {
+  recommendations?: PerformanceRecommendation[];
+  onApply?: (recommendation: PerformanceRecommendation) => void;
 }
 
 // Storage and Persistence
@@ -585,4 +607,22 @@ export interface PerformanceStorage {
 export interface TimeRange {
   start: number;
   end: number;
+}
+
+// Performance configuration
+export interface PerformanceConfig {
+  enableMetrics: boolean;
+  enableMemoryMonitoring: boolean;
+  enableBundleAnalysis: boolean;
+  enableLazyLoading: boolean;
+  enableOptimizationRecommendations: boolean;
+  autoOptimize: boolean;
+  memoryThreshold: number;
+  performanceThreshold: number;
+  trackingInterval: number;
+  maxDataPoints: number;
+  enableProfiling: boolean;
+  enableTracing: boolean;
+  enableReporting: boolean;
+  reportingInterval: number;
 }

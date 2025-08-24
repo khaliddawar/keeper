@@ -1,5 +1,4 @@
 // User and authentication type definitions
-import { IntegrationType } from './index';
 
 export interface User {
   id: string;
@@ -133,7 +132,15 @@ export interface UserIntegration {
   updatedAt: Date;
 }
 
-
+export enum IntegrationType {
+  TELEGRAM = 'telegram',
+  GOOGLE_CALENDAR = 'google_calendar',
+  GMAIL = 'gmail',
+  OUTLOOK = 'outlook',
+  SLACK = 'slack',
+  NOTION = 'notion',
+  TRELLO = 'trello'
+}
 
 export enum IntegrationStatus {
   ACTIVE = 'active',

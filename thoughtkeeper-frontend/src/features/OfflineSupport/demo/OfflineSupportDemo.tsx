@@ -149,7 +149,7 @@ export const OfflineSupportDemo: React.FC = () => {
   // Mock functions
   const mockGetOfflineCapability = (feature: string): boolean => {
     if (!demoIsOnline) {
-      const offlineCapabilities: Record<string, boolean> = {
+      const offlineCapabilities = {
         'dataAccess': true,
         'dataModification': true,
         'search': true,
@@ -505,7 +505,7 @@ export const OfflineSupportDemo: React.FC = () => {
         )}
       </div>
 
-      <style>{`
+      <style jsx>{`
         .offline-support-demo {
           max-width: 1400px;
           margin: 0 auto;

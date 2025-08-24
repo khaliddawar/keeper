@@ -191,11 +191,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
               validationMessage && errorId
             ) || undefined
           }
-          // Spread props but exclude motion-conflicting event handlers
-          {...(() => {
-            const { onAnimationStart, onAnimationEnd, ...restProps } = props;
-            return restProps;
-          })()}
+          {...props}
           animate={{
             scale: isFocused ? 1.01 : 1,
           }}
