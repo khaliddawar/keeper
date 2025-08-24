@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { PerformanceProvider, usePerformance, useMemoryOptimization, useLazyLoading } from '../PerformanceProvider';
+import { PerformanceProvider, useMemoryOptimization, useLazyLoading } from '../PerformanceProvider';
 import { PerformanceDashboard } from '../components';
-import type { PerformanceConfig } from '../types';
+// import type { PerformanceConfig } from '../types';
 
 /**
  * Performance Demo Component

@@ -936,13 +936,13 @@ export class DefaultShortcuts {
 
   private createZoomHandler(direction: 'in' | 'out'): ShortcutHandler {
     return async () => {
-      const currentZoom = parseFloat(document.body.style.zoom) || 1;
+      const currentZoom = parseFloat((document.body.style as any).zoom) || 1;
       const increment = 0.1;
       const newZoom = direction === 'in' 
         ? Math.min(2, currentZoom + increment)
         : Math.max(0.5, currentZoom - increment);
       
-      document.body.style.zoom = newZoom.toString();
+      (document.body.style as any).zoom = newZoom.toString();
     };
   }
 

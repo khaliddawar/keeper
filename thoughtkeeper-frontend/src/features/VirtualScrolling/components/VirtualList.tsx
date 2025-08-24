@@ -73,7 +73,14 @@ export const VirtualList = forwardRef<any, VirtualListProps>(function VirtualLis
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
-    scrollTo: (options: ScrollToOptions) => scrollTo(options),
+    scrollTo: ((...args: any[]) => {
+      // Support both signatures
+      if (typeof args[0] === 'object') {
+        scrollTo(args[0] as ScrollToOptions);
+      } else {
+        scrollTo(args[0] as number, args[1] as number);
+      }
+    }) as any,
     scrollToTop,
     scrollToBottom,
     scrollToIndex: (index: number, alignment = scrollToAlignment) => 

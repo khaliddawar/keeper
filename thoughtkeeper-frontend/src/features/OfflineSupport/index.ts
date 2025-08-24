@@ -18,7 +18,14 @@ export {
 } from './OfflineSupportProvider';
 
 // Components
-export * from './components';
+export {
+  ConflictResolutionPanel,
+  NetworkStatusIndicator,
+  OfflineCapabilities,
+  OfflineDashboard,
+  PWAInstallPrompt,
+  StorageQuotaIndicator
+} from './components';
 
 // Demo component
 export { OfflineSupportDemo } from './demo/OfflineSupportDemo';

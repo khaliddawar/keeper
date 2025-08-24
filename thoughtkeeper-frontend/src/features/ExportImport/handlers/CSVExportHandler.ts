@@ -337,7 +337,7 @@ export class CSVExportHandler implements ExportHandler {
       return acc;
     }, {} as Record<string, number>);
 
-    return Object.entries(distribution).sort(([,a], [,b]) => b - a);
+    return (Object.entries(distribution) as Array<[string, number]>).sort(([, a], [, b]) => (b as number) - (a as number));
   }
 
   /**
@@ -349,7 +349,7 @@ export class CSVExportHandler implements ExportHandler {
       return acc;
     }, {} as Record<string, number>);
 
-    return Object.entries(distribution).sort(([,a], [,b]) => b - a);
+    return (Object.entries(distribution) as Array<[string, number]>).sort(([, a], [, b]) => (b as number) - (a as number));
   }
 
   /**

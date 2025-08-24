@@ -227,7 +227,7 @@ export const ShortcutRecorder: React.FC<ShortcutRecorderProps> = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .shortcut-recorder {
           position: relative;
         }

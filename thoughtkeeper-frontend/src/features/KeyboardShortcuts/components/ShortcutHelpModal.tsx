@@ -204,7 +204,7 @@ export const ShortcutHelpModal: React.FC<ShortcutHelpModalProps> = ({
                   )}
                   
                   <div className="shortcut-help-modal__shortcuts-grid">
-                    {category.shortcuts.map(({ shortcut, formatted }) => (
+                    {category.shortcuts.map(({ shortcut, formatted }: any) => (
                       <div
                         key={shortcut.id}
                         className={`shortcut-help-modal__shortcut ${!shortcut.enabled ? 'shortcut-help-modal__shortcut--disabled' : ''}`}
@@ -242,7 +242,7 @@ export const ShortcutHelpModal: React.FC<ShortcutHelpModalProps> = ({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .shortcut-help-modal-overlay {
           position: fixed;
           top: 0;

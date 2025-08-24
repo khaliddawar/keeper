@@ -11,7 +11,7 @@ export { PerformanceProvider } from './PerformanceProvider';
 
 // Hooks for consuming components
 export {
-  usePerformance,
+  // usePerformance, // not exported by provider
   useMemoryOptimization,
   useLazyLoading,
   useBundleAnalysis

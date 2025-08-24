@@ -483,7 +483,7 @@ export const useBundleAnalysis = (): UseBundleAnalysisReturn => {
     return bundleAnalysis?.recommendations || [];
   }, [bundleAnalysis]);
 
-  const estimateSavings = useCallback((recommendation) => {
+  const estimateSavings = useCallback((recommendation: any) => {
     return recommendation.estimatedSavings || 0;
   }, []);
 
@@ -575,7 +575,7 @@ export const usePerformanceAlerts = () => {
     if (!context) return;
 
     const checkForAlerts = () => {
-      const newAlerts = [];
+      const newAlerts: any[] = [];
 
       // Memory pressure alerts
       if (context.memoryMetrics.memoryPressure === 'high' || context.memoryMetrics.memoryPressure === 'critical') {

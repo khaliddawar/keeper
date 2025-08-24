@@ -226,7 +226,8 @@ export const ExportImportProvider: React.FC<ExportImportProviderProps> = ({ chil
     // For now, we'll simulate with mock data
     const { MockApiService } = await import('../../mocks');
     
-    const notebooks = await MockApiService.notebooks.getNotebooks();
+    const notebooksResponse = await MockApiService.notebooks.getNotebooks();
+    const notebooks = notebooksResponse.notebooks;
     const tasksResponse = await MockApiService.tasks.getTasks({ includeSubtasks: true });
     
     return {
@@ -244,7 +245,7 @@ export const ExportImportProvider: React.FC<ExportImportProviderProps> = ({ chil
         },
         filters: []
       },
-      notebooks: notebooks.map(notebook => ({
+      notebooks: notebooks.map((notebook: any) => ({
         id: notebook.id,
         title: notebook.title,
         description: notebook.description || '',
@@ -259,27 +260,28 @@ export const ExportImportProvider: React.FC<ExportImportProviderProps> = ({ chil
         createdAt: new Date(notebook.createdAt),
         updatedAt: new Date(notebook.updatedAt)
       })),
-      tasks: tasksResponse.tasks.map(task => ({
+      tasks: tasksResponse.tasks.map((task: any) => ({
         id: task.id,
         title: task.title,
         description: task.description || '',
-        notes: task.notes || '',
+        // notes field not in Task; omit
         status: task.status,
         priority: task.priority,
         tags: task.tags || [],
         notebookId: task.notebookId,
         parentId: task.parentId,
         assignee: task.assignee,
-        estimatedHours: task.estimatedHours,
-        actualHours: task.actualHours,
+        // map time fields to export schema if present
+        estimatedHours: task.timeEstimate,
+        actualHours: task.actualTimeSpent,
         dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
         completedAt: task.completedAt ? new Date(task.completedAt) : undefined,
         createdAt: new Date(task.createdAt),
         updatedAt: new Date(task.updatedAt),
-        subtasks: (task.subtasks || []).map(subtask => ({
+        subtasks: (task.subtasks || []).map((subtask: any) => ({
           id: subtask.id,
           title: subtask.title,
-          completed: subtask.completed,
+          completed: Boolean(subtask.completedAt),
           createdAt: new Date(subtask.createdAt),
           updatedAt: new Date(subtask.updatedAt)
         }))

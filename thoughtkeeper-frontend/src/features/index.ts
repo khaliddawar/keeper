@@ -387,7 +387,7 @@ export class FeatureManager {
   
   disableFeature(feature: FeatureName): void {
     if (this.config[feature]) {
-      this.config[feature].enabled = false;
+      this.config[feature]!.enabled = false;
     }
   }
 }

@@ -151,7 +151,7 @@ export const ShortcutTooltip: React.FC<ShortcutTooltipProps> = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .shortcut-tooltip-container {
           position: relative;
           display: inline-block;
@@ -291,7 +291,7 @@ export const ShortcutKeys: React.FC<{ shortcut: string }> = ({ shortcut }) => {
         </React.Fragment>
       ))}
       
-      <style jsx>{`
+      <style>{`
         .shortcut-keys {
           display: inline-flex;
           align-items: center;

@@ -455,8 +455,9 @@ export class TasksApiMock {
       ...data,
       updatedAt: new Date(),
       completedAt: data.status === TaskStatus.COMPLETED ? (data.completedAt || new Date()) : 
-                    data.status && data.status !== TaskStatus.COMPLETED ? undefined : 
+                    (data.status && data.status !== TaskStatus.COMPLETED ? undefined : 
                     task.completedAt
+    );
     };
     
     this.tasks[taskIndex] = updatedTask;
